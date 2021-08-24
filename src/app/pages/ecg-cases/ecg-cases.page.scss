@@ -1,0 +1,640 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  background-color: var(--colorececec);
+  height: calc(100vh);
+  padding-top: var(--px20);
+}
+.side-menu-visible.container {
+  height: calc(100vh - var(--px56));
+
+  .case-list {
+    width: calc(40% - var(--px20));
+  }
+  .case-details {
+    width: calc(60% - var(--px10));
+  }
+}
+@media only screen and (max-width: 600px) {
+  .side-menu-visible.container {
+    display: block;
+    overflow-y: auto;
+    height: calc(100vh - var(--px56));
+
+    .case-list {
+      width: calc(100% - var(--px20));
+    }
+    .case-details {
+      width: calc(100% - var(--px10));
+    }
+  }
+}
+
+.cases-container {
+  height: calc(100% - var(--px155));
+  overflow-y: auto;
+  --background: transparent;
+}
+.no-data {
+  text-align: center;
+  padding: var(--px30) 0px;
+  color: var(--color000000);
+  font-family: "Roboto";
+  font-size: var(--px14);
+  font-weight: 500;
+  font-style: normal;
+  letter-spacing: normal;
+  line-height: var(--px40);
+
+}
+.case-list {
+  position: relative;
+  display: block;
+  margin: 0px var(--px5) 0 var(--px10);
+  background-color: var(--colorececec);
+  // min-width: 472px;
+  width: calc(40% - var(--px20));
+  height: calc(100%);
+
+  border-radius: var(--px20) 0 0;
+  ion-fab {
+    position: absolute;
+    right: var(--px30);
+    bottom: var(--px10);
+    .fab-add {
+      width: var(--px60);
+      height:var(--px60);
+      --color: white;
+      --box-shadow: var(--px1) var(--px2) var(--px5) rgba(0, 0, 0, 0.19);
+      --close-icon-font-size: var(--px30);
+    }
+  }
+
+  .selected {
+    --background: var(--colore2ffd0);
+    // --background-activated-opacity: 0.04;
+    // opacity : 0.5;
+  }
+
+  .search-box-container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: var(--px10);
+    width: 100%;
+    height: var(--px55);
+    border-radius: var(--px20) 0 0;
+    background-color: var(--ion-color-primary);
+
+    .search-bar {
+      font-family: "Roboto";
+      font-size: var(--px14);
+      font-weight: 400;
+      --background: var(--colorffffff);
+      --border-radius: var(--px18);
+      padding-inline-start: var(--px10);
+      padding-inline-end: 0px;
+      --placeholder-color: var(--color000000);
+      --placeholder-font-weight: 400;
+      --placeholder-opacity: 0.5;
+
+      height: var(--px35);
+      --icon-color: var(--color444645);
+      .searchbar-search-icon {
+        width: var(--px15);
+        height: var(--px15);
+      }
+      input {
+        font-size: var(--px14) !important;
+      }
+      .searchbar-input-container {
+        input {
+          font-size: var(--px14);
+        }
+      }
+    }
+
+    ion-checkbox {
+      --border-radius: var(--px2);
+      --border-width: var(--px2);
+      --background: var(--ion-color-primary);
+      --border-color: var(--colorffffff);
+      --checkmark-color: var(--ion-color-primary);
+      --background-checked: var(--colorffffff);
+      --border-color-checked: var(--colorffffff);
+      --checkmark-width: var(--px4);
+      width: var(--px20);
+      height: var(--px20);
+      max-width: var(--px20);
+      margin-inline-end: 0px;
+    }
+
+    .checkbox-container {
+      position: relative;
+      padding: var(--px7) 0 var(--px8);
+    }
+
+    .delete-icon {
+      width: var(--px31);
+      height: var(--px23);
+      margin: var(--px6) var(--px10) var(--px6) var(--px15);
+      cursor: pointer;
+    }
+    .switch-icon {
+      width: var(--px31);
+      height: var(--px24);
+      margin: var(--px6) var(--px10) var(--px6) var(--px15);
+      cursor: pointer;
+    }
+  }
+
+  .cases-box {
+    height: var(--px40);
+    padding-left: var(--px10);
+    background-color: var(--colorececec);
+    --background: var(--colorececec);
+    --background-hover: var(--colorf8f8f8);
+    p {
+      // width: var(--px72);
+      height: var(--px16);
+      color: var(--color000000);
+      font-family: "Roboto";
+      font-size: var(--px14);
+      font-weight: 500;
+      font-style: normal;
+      letter-spacing: normal;
+      line-height: var(--px40);
+      text-align: left;
+    }
+  }
+
+  .case {
+    --padding-start: 0px;
+    --min-height: var(--px59);
+    --background-hover: var(--colore2ffd0);
+    --background-hover-opacity:0.5;
+
+    .reorder {
+      margin-inline-start: var(--px33);
+      ion-icon {
+        width: var(--px12);
+        height: var(--px13);
+      }
+    }
+    .case-container {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+
+      ion-checkbox {
+        .item-cover {
+          display: none;
+        }
+        --border-radius: var(--px2);
+        --border-width: var(--px2);
+        // --background: transparent;
+        --background: var(--colorffffff);
+        --border-color: var(--colorb2b2b2);
+        --checkmark-color: var(--colorffffff);
+        --background-checked: var(--ion-color-primary);
+        --border-color-checked: var(--ion-color-primary);
+        --checkmark-width:var(--px4);
+        width: var(--px20);
+        height: var(--px20);
+        max-width: var(--px20);
+        margin-inline-end: 0px;
+      }
+
+      .checkbox-container {
+        position: relative;
+        padding: var(--px10) var(--px15) var(--px8) var(--px10);
+      }
+    }
+    .case-info {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+
+      .case-number {
+        margin-top: var(--px9);
+        margin-bottom: var(--px5);
+        color: var(--color000000);
+        font-family: "Roboto";
+        font-size: var(--px14);
+        line-height: var(--px18);
+        font-weight: 500;
+        font-style: normal;
+        letter-spacing: normal;
+        text-align: right;
+      }
+
+      .case-mini-discription {
+        width: calc(100% - var(--px33));
+        color: var(--color777777);
+        font-family: "Roboto";
+        font-size: var(--px12);
+        font-weight: 400;
+        font-style: normal;
+        letter-spacing: normal;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
+.case-details {
+  background-color: var(--colorffffff);
+  margin: 0px var(--px10) 0px var(--px5);
+  // min-width: 700px;
+  width: calc(60% - var(--px10));
+  height: calc(100%);
+  border-radius: 0 var(--px20) 0 0;
+  overflow-y: auto;
+
+  .heading {
+    width: 100%;
+    height: var(--px55);
+    box-shadow: 0 0 var(--px4) var(--px1) rgba(0, 0, 0, 0.16);
+    border-radius: 0 var(--px20) 0 0;
+    background-color: var(--colorffffff);
+
+    .title {
+      padding-left: var(--px20);
+      color: var(--color000000);
+      font-family: "Roboto";
+      font-size: var(--px18);
+      font-weight: 500;
+      font-style: normal;
+      letter-spacing: normal;
+      line-height: var(--px55);
+      text-align: left;
+    }
+  }
+  .dotted-border {
+    border-bottom: var(--px1) dashed var(--color777777);
+  }
+  .case-description {
+    padding-left: var(--px21);
+    padding-top: var(--px20);
+    .desc-heading {
+      width: 100%;
+      color: var(--color000000);
+      font-family: "Roboto";
+      font-size: var(--px14);
+      font-weight: 500;
+      font-style: normal;
+      text-align: left;
+      text-transform: uppercase;
+    }
+    .desc-details {
+      margin-top: var(--px13);
+      margin-bottom: var(--px13);
+      width: 100%;
+      color: var(--color000000);
+      font-family: "Roboto";
+      font-size: var(--px14);
+      font-weight: 400;
+      text-align: left;
+      white-space: pre-wrap;
+    }
+    .label-text {
+      margin-bottom: var(--px9);
+      width: 100%;
+      color: var(--color777777);
+      font-family: "Roboto";
+      font-size: var(--px12);
+      font-weight: 500;
+      font-style: normal;
+      text-align: left;
+      text-transform: uppercase;
+    }
+  }
+
+  .attachment {
+    padding-left: var(--px21);
+    padding-top: var(--px13);
+    margin-bottom: var(--px13);
+    .desc-heading {
+      margin-bottom: var(--px9);
+      width: 100%;
+      color: var(--color000000);
+      font-family: "Roboto";
+      font-size: var(--px14);
+      font-weight: 500;
+      font-style: normal;
+      text-align: left;
+      text-transform: uppercase;
+    }
+
+    .align-right {
+      align-items: center !important;
+      justify-content: space-between !important;
+    }
+    .btn-container {
+      width: calc(100% - var(--px18));
+
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: flex-start;
+
+      .attch-btn {
+        color: var(--color000000);
+        font-family: "Roboto";
+        font-size: var(--px13);
+        font-weight: 400;
+
+        // width: 127px;
+        height: var(--px35);
+        --border-radius: var(--px5);
+        --border-style: solid;
+        --border-width: var(--px1);
+        --padding-end: var(--px16);
+        --padding-start: var(--px16);
+        text-transform: none;
+
+        --border-color: #d2d2d2;
+        --background: linear-gradient(to top, #eaeaea 0%, #ffffff 100%);
+        // background-image: linear-gradient(to top, #eaeaea 0%, #ffffff 100%);
+      }
+
+      .attach-image {
+        cursor: pointer;
+        // height: var(--px120);
+        height: auto;
+        width: 100%;
+        width: -moz-available;
+        width: -webkit-fill-available;
+      }
+    }
+  }
+
+  .answer-heading {
+    padding-left: var(--px20);
+    width: 100%;
+    height: var(--px40);
+    background-color: var(--colorececec);
+    p {
+      color: var(--color000000);
+      font-family: "Roboto";
+      font-size: var(--px14);
+      line-height: var(--px40);
+      font-weight: 500;
+      text-align: left;
+      text-transform: uppercase;
+    }
+  }
+}
+.bottom-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding-top: var(--px20);
+  // padding-bottom: 20px;
+
+  .delete-btn {
+    width: var(--px102);
+    color: var(--ion-color-primary);
+    font-family: "Roboto";
+    font-size: var(--px15);
+    font-weight: 500;
+    height: var(--px35);
+    text-transform: uppercase;
+    --background-activated: transparent;
+    --background-focused: transparent;
+    --background-hover:transparent;
+    --background-activated-opacity: 1;
+    --background-focused-opacity: 1;
+    --background-hover-opacity: 1;
+    --border-radius: var(--px17);
+    --border-style: solid;
+    --border-width: var(--px1);
+    --padding-end: var(--px25);
+    --padding-start: var(--px25);
+
+    --background: var(--colorffffff);
+    --border-color: var(--ion-color-primary);
+  }
+  .edit-btn {
+    width: var(--px102);
+    margin-left: var(--px10);
+    color: var(--colorffffff);
+    font-family: "Roboto";
+    font-size: var(--px15);
+    font-weight: 500;
+    height: var(--px35);
+    text-transform: uppercase;
+
+    --border-radius: var(--px17);
+    --border-style: solid;
+    --border-width: var(--px1);
+    --padding-end: var(--px25);
+    --padding-start: var(--px25);
+
+    --background: var(--ion-color-primary);
+    --border-color: var(--ion-color-primary);
+  }
+}
+
+.textarea {
+  width: calc(100% - var(--px18));
+  height: var(--px100);
+  min-height: var(--px98);
+  --border-radius: var(--px5) var(--px5) var(--px7) var(--px7);
+  border: var(--px1) solid var(--colore1e1e1);
+  background-color: var(--colorffffff);
+  --placeholder-color: var(--colord3d3d3);
+  --placeholder-font-weight: 400;
+  font-family: "Roboto";
+  font-size: var(--px12);
+  --color: var(--color000000);
+  overflow-y: auto;
+  textarea-wrapper {
+    textarea {
+      height: 100%;
+    }
+  }
+  .tox-tinymce{
+    border: none !important;
+  }
+}
+.no-border{
+  border: none !important;
+}
+
+.back-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+
+  .title {
+    margin-left: var(--px33);
+  }
+  ion-icon {
+    cursor: pointer;
+    position: absolute;
+    margin-left: var(--px20);
+    margin-right: var(--px9);
+    width: var(--px22);
+    height: var(--px19);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+.title {
+  font-family: "Roboto";
+}
+
+// #caseNumber{
+//   width: calc(100% - 18px);
+//   height: 100px;
+//   min-height: 98px;
+//   --border-radius: 5px 5px 7px 7px;
+//   border: 1px solid var(--colore1e1e1);
+//   background-color: var(--colorffffff);
+//   --placeholder-color: var(--colord3d3d3);
+//   --placeholder-font-weight: 400;
+//   font-family: "Roboto";
+//   font-size: 12px;
+//   --color: var(--color000000);
+//   overflow-y: auto;
+
+// }
+
+// the input container which can hold icons and input
+//  .input-container:last-child {
+//   margin-bottom: 30px;
+// }
+
+.input-container {
+  position: relative;
+  background-color: var(--colorffffff);
+  margin-left: var(--px10);
+  margin-right: var(--px10);
+  margin-bottom: var(--px2);
+  width: var(--px100) !important;
+  padding-left: 0px;
+  padding-right: 0px;
+  width: 100%;
+  height: var(--px36);
+  box-shadow: 0 var(--px1) var(--px3) var(--px1) rgba(0, 0, 1, 0.18);
+  border-radius: var(--px4);
+
+  // Css for the input box
+  ion-input {
+    position: absolute;
+    // left: 45px;
+    width: calc(100% - var(--px45));
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: left;
+    font-size: var(--px18);
+    font-weight: 600;
+    line-height: var(--px20);
+    --color: var(--color000000);
+
+    --placeholder-color: var(--colorcbcbcb);
+    --placeholder-font-style: initial;
+    --placeholder-font-weight: 600;
+    --placeholder-opacity: 1;
+    --padding-top: 0px;
+    --padding-end: var(--px5);
+    --padding-bottom: 0px;
+    --padding-start: 0px;
+  }
+
+  ion-input:first-child {
+    left: var(--px5);
+    width: 100%;
+  }
+
+  ion-input:nth-last-child(2) {
+    width: calc(100% - var(--px90));
+  }
+
+  // css for left icon inside a input box
+  .input-icon {
+    position: absolute;
+    left: var(--px15);
+    top: 50%;
+    transform: translateY(-50%);
+    width: var(--px15);
+    height: var(--px12);
+  }
+
+  // css for the right icon inside a input box
+  .right-icon {
+    position: absolute;
+    right: var(--px20);
+    top: 50%;
+    transform: translateY(-50%);
+    width: var(--px18);
+    height: var(--px15);
+    --background: transparent;
+    --padding-start: 0px;
+    --padding-end: 0px;
+    --box-shadow: none;
+    --border-radius: 0px;
+    margin: 0px;
+  }
+}
+
+.error-block-header {
+  // text-align: left !important;
+  // margin-bottom: 10px;
+  // height: 18px;
+
+  small {
+    width: auto;
+    max-width: 100%;
+    color: var(--ion-color-danger);
+    text-align: left !important;
+    font-size: var(--px13);
+    font-weight: 400;
+    line-height: var(--px18);
+  }
+}
+
+.pagination-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  span{
+    color: var(--ion-color-primary);
+  }
+  p{
+    // width: 72px;
+    position :absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    height: var(--px16);
+    color: var(--color000000);
+    font-family: "Roboto";
+    font-size: var(--px14);
+    font-weight: 500;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+  }
+  ion-button {
+    --background: transparent;
+    --box-shadow: none;
+    --background-activated: transparent;
+    --background-focused: transparent;
+    --background-hover:transparent;
+    --background-activated-opacity: 1;
+    --background-focused-opacity: 1;
+    --background-hover-opacity: 1;
+  }
+
+}
+
+

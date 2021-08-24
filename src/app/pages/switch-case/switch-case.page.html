@@ -1,0 +1,54 @@
+<div class="container">
+  <p class="heading">{{'switchCase'| translate}}</p>
+  <p class="message-info">{{'switchCaseInfo'| translate}}</p>
+  <form [formGroup]="switchForm" (keyup.enter)="submit()" class="switch-form">
+
+    <div>
+      <ion-label>{{'caseNumber' | translate}}</ion-label>
+      <div class="switch-input-container">
+        <ion-input  id="to" placeholder="{{ 'enter' | translate }}" formControlName="to" name="to" type="number" enterkeyhint="next" min="1" [max]="maxValue">
+        </ion-input>
+      </div>
+      <div *ngIf="isSubmit && f.to.errors" class="error-block">
+        <small *ngIf=" f.to.errors.required">{{ 'caseNumberRequired' | translate
+          }}</small>
+        <small *ngIf=" f.to.errors.pattern && !(f.to.errors.required || f.to.errors.max ||f.to.errors.min)">{{ 'invalidCaseNumberPattern' | translate
+          }}</small>
+        <small *ngIf=" f.to.errors.max">{{ 'invalidCaseNumber' | translate
+          }}{{maxValue}}.</small>
+        <small *ngIf=" f.to.errors.min">{{ 'invalidCaseNumber' | translate
+          }}{{maxValue}}.</small>
+      </div>
+    </div>
+
+    <div>
+      <ion-label>{{'caseNumber' | translate}}</ion-label>
+      <div class="switch-input-container">
+        <ion-input  id="from" placeholder="{{ 'enter' | translate }}" formControlName="from" name="from" type="number" enterkeyhint="next" min="1" [max]="maxValue">
+        </ion-input>
+      </div>
+      <div *ngIf="isSubmit && f.from.errors" class="error-block">
+        <small *ngIf=" f.from.errors.required">{{ 'caseNumberRequired' | translate
+          }}</small>
+        <small *ngIf=" f.from.errors.pattern && !(f.from.errors.required || f.from.errors.max ||f.from.errors.min)">{{ 'invalidCaseNumberPattern' | translate
+          }}</small>
+        <small *ngIf=" f.from.errors.max">{{ 'invalidCaseNumber' | translate
+          }}{{maxValue}}.</small>
+        <small *ngIf=" f.from.errors.min">{{ 'invalidCaseNumber' | translate
+          }}{{maxValue}}.</small>
+        <small *ngIf="f.from.errors.equalTo && !(f.from.errors.required || f.from.errors.max ||f.from.errors.min || f.from.errors.pattern)">{{ 'cannotBeSame' |
+            translate }}</small>
+      </div>
+    </div>
+
+
+    <ion-button (click)="dismiss(null)" id="xcancel" class="x-btn">X</ion-button>
+
+  </form>
+  <div class="bottom-container">
+    <ion-button (click)="dismiss(null)" id="cancel" class="cancel-btn">{{'cancel'|translate}}</ion-button>
+    <ion-button id="submit" (click)="submit()" [disabled]="submitBtnDisabled" class="switch-btn">
+      {{'switch'|translate}}</ion-button>
+  </div>
+
+</div>

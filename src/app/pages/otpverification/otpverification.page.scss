@@ -1,0 +1,40 @@
+.otp-container {
+  width: var(--px350);
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.digit-input {
+  color: var(--color000000);
+  font-size: var(--px14);
+  --background: var(--colorffffff);
+  --padding-bottom: var(--px10);
+  --padding-end: var(--px10);
+  --padding-start: var(--px12);
+  --padding-top: var(--px10);
+  width: var(--px36);
+  height: var(--px36);
+  max-width: var(--px36);
+  max-height: var(--px36);
+  box-shadow: 0 var(--px1) var(--px3) var(--px1) rgba(0, 0, 1, 0.18);
+  border-radius: var(--px4);
+}
+
+.not-empty-digit {
+  // --background: var(--colorffffff) !important;
+}
+.resendCode {
+  width: max-content;
+  margin-left: auto;
+  color: var(--colorffffff);
+  font-size: var(--px13);
+  font-weight: 400;
+  font-style: normal;
+  letter-spacing: normal;
+  line-height: var(--px18);
+  text-align: right;
+  margin-top: var(--px12);
+  margin-bottom: var(--px18);
+}

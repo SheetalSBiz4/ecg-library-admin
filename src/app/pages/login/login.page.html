@@ -1,0 +1,60 @@
+<ion-content class="background">
+
+  <div class="page-container">
+    <!-- Logo -->
+    <p class="logo">{{'appName' | translate}}</p>
+    <p class="greeting">{{'greeting' | translate}}</p>
+    <p class="message">{{'message' | translate}}</p>
+
+    <form [formGroup]="loginForm" (keyup.enter)="login()" class="form">
+
+      <!-- Email -->
+      <div>
+        <div class="input-container">
+          <ion-icon class="input-icon" src="assets/img/email.svg"></ion-icon>
+          <ion-input placeholder="{{ 'email' | translate }}" formControlName="email" name="email" type="email"
+            enterkeyhint="next">
+          </ion-input>
+        </div>
+        <div *ngIf="isSubmit" class="error-block">
+          <small *ngIf="f.email.errors &&  f.email.errors.required">{{ 'emailRequired' | translate
+            }}</small>
+          <small *ngIf="f.email.errors &&  f.email.errors.pattern">{{ 'emailInvalid' | translate
+            }}</small>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div>
+        <div class="input-container">
+          <ion-icon class="input-icon" src="assets/img/password.svg"></ion-icon>
+          <ion-input placeholder="{{ 'password' | translate }}" formControlName="password" name="password"
+            [type]="isPasswordHidden ? 'text' : 'password'" enterkeyhint="go">
+          </ion-input>
+
+          <ion-button (click)="togglePassword()" class="right-icon">
+            <ion-icon slot="icon-only" [src]="isPasswordHidden ? 'assets/img/eye_open.svg' : 'assets/img/eye_close.svg'">
+            </ion-icon>
+          </ion-button>
+        </div>
+        <div *ngIf="isSubmit" class="error-block">
+          <small *ngIf="f.password.errors &&  f.password.errors.required">{{ 'passwordRequired' | translate
+            }}</small>
+        </div>
+      </div>
+
+      <!-------------- Keep me signed in --------------->
+      <div class="checkbox-container">
+        <ion-checkbox mode="ios" slot="start" (click)="checkBox()" name="termsAndConditions"
+          formControllName="termsAndConditions"></ion-checkbox>
+        <ion-label class="checkbox-label">{{ 'rememberMe' | translate }}</ion-label>
+      </div>
+
+      <ion-button [disabled]="submitBtnDisabled" (click)="login()">{{ 'login' | translate }}</ion-button>
+
+    </form>
+
+    <p (click)="forgotPassword()" class="forgotPassword">{{'forgotPassword' | translate}}</p>
+  </div>
+
+</ion-content>

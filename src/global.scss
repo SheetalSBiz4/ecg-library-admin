@@ -1,0 +1,572 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "~@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "~@ionic/angular/css/normalize.css";
+@import "~@ionic/angular/css/structure.css";
+@import "~@ionic/angular/css/typography.css";
+@import "~@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "~@ionic/angular/css/padding.css";
+@import "~@ionic/angular/css/float-elements.css";
+@import "~@ionic/angular/css/text-alignment.css";
+@import "~@ionic/angular/css/text-transformation.css";
+@import "~@ionic/angular/css/flex-utils.css";
+
+/**** FONT VARIABLES ****/
+@mixin font-face($font-family, $file-path, $font-weight, $font-style) {
+  @font-face {
+    font-family: $font-family;
+    src: url("#{$file-path}.ttf");
+    // src: url('#{$file-path}.eot');
+    // src: url('#{$file-path}.eot?#iefix') format('embedded-opentype'),
+    // url('#{$file-path}.woff') format('woff'),
+    // url('#{$file-path}.ttf') format('truetype'),
+    // url('#{$file-path}.svg##{$font-family}') format('svg');
+    font-weight: $font-weight;
+    font-style: $font-style;
+  }
+}
+
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: normal;
+  src: url("assets/fonts/OpenSans-Regular.ttf");
+}
+
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: bold;
+  src: url("assets/fonts/OpenSans-Bold.ttf");
+}
+
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 300;
+  src: url("assets/fonts/OpenSans-Light.ttf");
+}
+
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 600;
+  src: url("assets/fonts/OpenSans-SemiBold.ttf");
+}
+
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 800;
+  src: url("assets/fonts/OpenSans-ExtraBold.ttf");
+}
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 500;
+  src: url("assets/fonts/Montserrat-Medium.ttf");
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: normal;
+  src: url("assets/fonts/Roboto-Regular.ttf");
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: bold;
+  src: url("assets/fonts/Roboto-Bold.ttf");
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 300;
+  src: url("assets/fonts/Roboto-Light.ttf");
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 500;
+  src: url("assets/fonts/Roboto-Medium.ttf");
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 100;
+  src: url("assets/fonts/Roboto-Thin.ttf");
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 900;
+  src: url("assets/fonts/Roboto-Black.ttf");
+}
+html {
+  // Give size to the deault rem unit increasing this will
+  // increase the size of everything based on rem units
+  font-size: 62.5%;
+
+  // for dynamic font size in different devices
+  // font-size: calc(8px + (18 - 8) * ((100vw - 300px) / (1600 - 300)));
+  // --ion-default-font: SFUI;
+  // line-height: calc(1.3rem + (1.5 - 1.2) * ((100vw - 300px)/(1600 - 300)));
+}
+
+// @media only screen
+//    and (max-width : 1080px)
+//    and (max-height : 1920px) {
+//    /* Styles here */
+//    html {
+//     font-size: 100.5%;
+//   }
+// }
+// @media only screen
+//    and (max-width : 2304px)
+//    and (max-height : 4096px) {
+//    /* Styles here */
+//    html {
+//     font-size: 100.5%;
+//   }
+// }
+// @media only screen
+//    and (max-width : 2880px)
+//    and (max-height : 5120px) {
+//    /* Styles here */
+//    html {
+//     font-size: 100.5%;
+//   }
+// }
+/* 13 inch displays ----------- */
+@media only screen and (min-width: 1224px) {
+}
+/* 24 inch iMac ----------- */
+@media only screen and (min-width: 1600px) {
+  html {
+    font-size: 80%;
+  }
+}
+/* 27 inch iMac ----------- */
+@media only screen and (min-width: 2400px) {
+  html {
+    font-size: 100%;
+  }
+}
+html {
+  --ion-default-font: "Open Sans";
+}
+html.md {
+  --ion-default-font: "Open Sans";
+}
+html.ios {
+  --ion-default-font: "Open Sans";
+}
+/**** *************** ****/
+
+/**** Common Css ****/
+
+//For mobile app not supported div shown
+.not-support {
+  display: none;
+}
+@media (min-width: 320px) and (max-width: 600px) {
+  app-root {
+    display: none;
+  }
+  .not-support {
+    display: block !important;
+    text-align: center;
+  }
+}
+
+// for Ipad
+.plt-ipad {
+  #container {
+    height: calc(var(--app-height));
+  }
+
+  .side-menu-visible {
+    height: calc(var(--app-height) - var(--px43)) !important;
+  }
+}
+
+p {
+  margin: 0;
+  padding: 0;
+}
+
+.background {
+  --background: var(--ion-color-primary) url("assets/img/background.png");
+}
+
+@media only screen and (max-width: 600px) {
+  .page-container {
+    max-width: 100% !important;
+    padding: 5%;
+  }
+}
+
+.page-container {
+  width: 100%;
+  max-width: var(--px350);
+  // text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, -50%);
+
+  .logo {
+    margin-top: 8%;
+    color: var(--colorffffff);
+    font-family: "Montserrat";
+    font-size: var(--px27);
+    font-weight: 500;
+    font-style: normal;
+    letter-spacing: normal;
+    line-height: normal;
+    text-align: center;
+    font-style: normal;
+    letter-spacing: -0.09px;
+    line-height: normal;
+  }
+
+  .greeting {
+    margin-top: var(--px23);
+    color: var(--colorfff1f4);
+    font-size: var(--px20);
+    font-weight: 600;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: center;
+    text-transform: uppercase;
+    font-style: normal;
+    letter-spacing: normal;
+    line-height: normal;
+  }
+
+  .message {
+    margin-top: var(--px15);
+    font-size: var(--px14);
+    color: var(--colorc4f0a1);
+    font-weight: 400;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: center;
+    font-style: normal;
+    letter-spacing: normal;
+    line-height: var(--px18);
+    margin-bottom: var(--px13);
+    white-space: pre-wrap;
+    // use to a new line for \n and <br> in translate files
+  }
+
+  .forgotPassword {
+    color: var(--colorfff1f4);
+    font-size: var(--px13);
+    font-weight: 600;
+    font-style: normal;
+    letter-spacing: normal;
+    line-height: var(--px18);
+    text-align: center;
+    width: max-content;
+    margin: auto;
+    margin-top: var(--px11);
+    cursor: pointer;
+  }
+}
+
+.form {
+  // text-align: center;
+  width: 100%;
+
+  // the input container which can hold icons and input
+  .input-container:last-child {
+    margin-bottom: var(--px30);
+  }
+
+  .input-container {
+    position: relative;
+    background-color: var(--colorffffff);
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: var(--px2);
+    padding-left: var(--px45);
+    padding-right: var(--px40);
+    width: 100%;
+    height: var(--px36);
+    box-shadow: 0 var(--px1) var(--px3) var(--px1) rgba(0, 0, 1, 0.18);
+    border-radius: 4px;
+
+    // Css for the input box
+    ion-input {
+      position: absolute;
+      left: var(--px45);
+      width: calc(100% - var(--px45));
+      top: 50%;
+      transform: translateY(-50%);
+      text-align: left;
+      font-size: var(--px14);
+      font-weight: 600;
+      line-height: var(--px18);
+      --color: var(--color000000);
+
+      --placeholder-color: var(--colorcbcbcb);
+      --placeholder-font-style: initial;
+      --placeholder-font-weight: 600;
+      --placeholder-opacity: 1;
+      --padding-top: var(--px0);
+      --padding-end: var(--px5);
+      --padding-bottom: var(--px0);
+      --padding-start: var(--px0);
+    }
+
+    ion-input:first-child {
+      left: var(--px5);
+      width: 100%;
+    }
+
+    ion-input:nth-last-child(2) {
+      width: calc(100% - var(--px90));
+    }
+
+    // css for left icon inside a input box
+    .input-icon {
+      position: absolute;
+      left: var(--px15);
+      top: 50%;
+      transform: translateY(-50%);
+      width: var(--px15);
+      height: var(--px12);
+    }
+
+    // css for the right icon inside a input box
+    .right-icon {
+      position: absolute;
+      right: var(--px20);
+      top: 50%;
+      transform: translateY(-50%);
+      width: var(--px18);
+      height: var(--px15);
+      --background: transparent;
+      --padding-start: 0px;
+      --padding-end: 0px;
+      --box-shadow: none;
+      --border-radius: 0px;
+      margin: 0px;
+    }
+  }
+
+  ion-button {
+    width: 100%;
+    height: var(--px36);
+    --border-radius: var(--px4);
+    --background: var(--colorffffff);
+    --color: var(--ion-color-primary);
+    font-size: var(--px15);
+    font-weight: 600;
+    font-style: normal;
+    letter-spacing: normal;
+    line-height: var(--px18);
+    text-transform: uppercase;
+    --background-activated: var(--colorffffff);
+    --background-focused: var(--colorffffff);
+    --background-hover: var(--colorffffff);
+    --background-activated-opacity: 1;
+    --background-focused-opacity: 1;
+    --background-hover-opacity: 1;
+  }
+}
+.error-block {
+  text-align: left !important;
+  margin-bottom: var(--px10);
+  height: var(--px18);
+
+  small {
+    width: auto;
+    max-width: 100%;
+    color: var(--ion-color-danger);
+    text-align: left !important;
+    font-size: var(--px13);
+    font-weight: 400;
+    line-height: var(--px18);
+  }
+}
+.ecg-alert {
+  .alert-wrapper {
+    --max-width: var(--px408);
+    width: 90%;
+    min-height: var(--px169);
+    box-shadow: 0 0 var(--px13) rgba(0, 0, 0, 0.05);
+    border-radius: var(--px20);
+    border: var(--px1) solid #eae7e7;
+    background-color: #ffffff;
+    .alert-head {
+      // display: none;
+      padding-top: 0px;
+      padding-bottom: 0px;
+    }
+    .alert-message {
+      max-height: auto;
+      padding-inline-start: var(--px29);
+      padding-inline-end: var(--px27);
+      padding-top: var(--px60) !important;
+
+      color: var(--color010101);
+      font-family: "Roboto";
+      font-size: var(--px18);
+      font-weight: 400;
+      font-style: normal;
+      letter-spacing: normal;
+      text-align: center;
+    }
+
+    .alert-button-group {
+      justify-content: center;
+      .alert-button-role-cancel {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        min-width: unset !important;
+        border: none !important;
+        -webkit-padding-start: 0px;
+        padding-inline-start: 0px;
+        -webkit-padding-end: 0px;
+        padding-inline-end: 0;
+        margin-inline-end: var(--px25);
+        padding-top: var(--px18);
+        text-transform: uppercase;
+
+        span {
+          color: var(--colorc2c3c8);
+          font-family: "Roboto";
+          font-size: var(--px13);
+          font-weight: 400;
+          font-style: normal;
+          letter-spacing: normal;
+          line-height: var(--px17);
+          text-align: right;
+          text-transform: uppercase;
+        }
+      }
+
+      .primary {
+        max-width: var(--px93);
+        min-width: var(--px93);
+        width: var(--px93);
+        height: var(--px35);
+        border-radius: var(--px17);
+        background-color: var(--ion-color-primary);
+        padding-inline-start: var(--px20);
+        padding-inline-end: var(--px21);
+        text-transform: uppercase;
+        .alert-button-inner {
+          justify-content: center;
+        }
+        span {
+          color: var(--colorffffff);
+          font-family: "Roboto";
+          font-size: var(--px15);
+          font-weight: 500;
+          font-style: normal;
+          letter-spacing: normal;
+          line-height: normal;
+          text-align: left;
+          text-transform: uppercase;
+        }
+      }
+    }
+  }
+}
+.loading-wrapper {
+  background-color: transparent !important;
+  --background: transparent !important;
+  --box-shadow: none;
+  backdrop-filter: none;
+  box-shadow: none !important;
+  padding: var(--px10) !important;
+  border-radius: 50% !important;
+
+  .loading-content {
+    .app-loader-icon {
+      width: var(--px60);
+      height: var(--px60);
+    } //end of app-loader-icon
+  }
+}
+
+.switch-case {
+  padding: 15px;
+
+  .modal-wrapper {
+    width: var(--px464);
+    min-height: var(--px263);
+    height: auto;
+    box-shadow: 0 0 13px rgba(0, 0, 0, 0.05);
+    border-radius: var(--px20);
+    border: 1px solid var(--coloreae7e7);
+    background-color: var(--colorffffff);
+  }
+}
+.custom-modal-image-viewer {
+  --max-height:	 80% !important;
+  --max-width: 80% !important;
+  --min-height:	 10% !important;
+  --min-width: 10% !important;
+  // --height: 50%  !important;
+  // --width: 50%  !important;
+  // --background: transparent;
+  // --box-shadow:none !important;
+  display: none;
+
+  ion-content {
+    --background: transparent;
+    .swiper-container{
+      overflow: auto !important;
+      list-style : unset !important;
+    }
+    // .swiper-wrapper{
+    //   overflow: auto !important;
+    // }
+  }
+  ion-footer{
+    display: none;
+  }
+}
+*::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 4px;
+  height: 4px;
+}
+*::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, .5);
+  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+}
+*::-webkit-scrollbar-track {
+  // box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+*::-webkit-scrollbar-corner{
+  background-color: transparent;
+}

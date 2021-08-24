@@ -1,0 +1,274 @@
+<ion-header *ngIf="!isSideMenuVisible">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button color="light">
+      </ion-menu-button>
+    </ion-buttons>
+    <ion-title class="title" color="light">{{'appName'| translate}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div id="container" class="container" [ngClass]="{'side-menu-visible':!isSideMenuVisible}">
+
+    <div class="case-list">
+      <!-- fab placed to the (vertical) center and end -->
+      <ion-fab>
+        <ion-fab-button (click)="setIsDetails(false);" class="fab-add">
+          <ion-icon src="assets/img/plus.svg"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+      <div class="search-box-container">
+        <!-- checkbox -->
+        <div class="checkbox-container">
+          <ion-checkbox mode="ios" slot="start" [(ngModel)]="selectAll" (ionChange)="checkBox()" name="selectAll">
+          </ion-checkbox>
+        </div>
+
+        <!-- Search Bar -->
+        <ion-searchbar class="search-bar" mode="ios" (ionChange)="checkReorder()" name="search" id="search"
+          [(ngModel)]="searchText"></ion-searchbar>
+
+        <!-- Delete Icon -->
+        <ion-icon class="delete-icon" (click)="deleteAllchecked()" *ngIf="showDelete" src="assets/img/delete.svg">
+        </ion-icon>
+        <ion-icon class="switch-icon" (click)="openModal()" *ngIf="!showDelete && cases.length > 1 "
+          src="assets/img/switch.svg"></ion-icon>
+
+      </div>
+
+      <!-- Total cases label -->
+      <div class="cases-box">
+        <p>{{'cases'| translate}} {{activeCount}}</p>
+      </div>
+
+      <!-- case list -->
+      <div class="cases-container">
+
+        <ion-reorder-group (ionItemReorder)="reorderItems($event)" disabled="false">
+          <!-- Default reorder icon, end aligned items -->
+          <ng-container *ngFor="let item of cases | searchFilter: searchText: currentPage: itemsPerPage ;let i= index;">
+            <ion-item class="case" *ngIf="item.show" [attr.data-index]="i"
+              [ngClass]="{'selected':selectedCase?.index -1  == i}" (click)="setSelectedCase(item,i)">
+              <div class="case-container">
+                <div class="checkbox-container">
+                  <ion-checkbox mode="ios" slot="start" (click)="itemCheckBox($event)" (ionChange)="checkifChecked()"
+                    [(ngModel)]="item.isChecked" name="termsAndConditions">
+                  </ion-checkbox>
+                </div>
+                <div class="case-info">
+                  <p class="case-number">{{'case' | translate}} {{ i + 1 }}</p>
+                  <p class="case-mini-discription">{{item.details}}</p>
+                </div>
+              </div>
+              <!-- <ion-reorder class="reorder" mode="ios" slot="end"></ion-reorder> -->
+
+              <ion-reorder slot="end">
+                <ion-icon src="assets/img/reorder.svg"></ion-icon>
+              </ion-reorder>
+            </ion-item>
+          </ng-container>
+
+
+        </ion-reorder-group>
+        <p class="no-data" *ngIf="cases.length == 0 && !loading">{{'noData'| translate}}</p>
+      </div>
+      <div class="pagination-container"
+        *ngIf="(cases.length >0) && (!searchText || searchText && searchText.length ==0)">
+        <div>
+          <ion-button (click)="prev()">
+            <ion-icon slot="icon-only"
+              [src]="currentPage == 1 ?'assets/img/previous_disable.svg':'assets/img/previous_enable.svg'"></ion-icon>
+          </ion-button>
+          <ion-button (click)="next()">
+            <ion-icon slot="icon-only"
+              [src]="currentPage == totalPage ?'assets/img/next_disable.svg':'assets/img/next_enable.svg'"></ion-icon>
+          </ion-button>
+        </div>
+        <p> <span>{{currentPage}}</span> of {{totalPage}}</p>
+      </div>
+      <!-- <pagination-controls class="my-pagination" id="foo" (pageChange)="pageChanged($event)" (pageBoundsCorrection)="pageChanged($event)"
+        maxSize="9" directionLinks="true" autoHide="true" responsive="true" previousLabel="Previous" nextLabel="Next">
+      </pagination-controls> -->
+    </div>
+    <!-- View Case -->
+    <!-- case -->
+    <div *ngIf="isDetails && !loading && selectedCase" class="case-details">
+      <!-- case title -->
+      <div class="heading">
+        <p class="title">{{'case' | translate}} {{selectedCase?.index}}</p>
+      </div>
+      <!-- Case details -->
+      <div class="case-description dotted-border">
+        <p class="desc-heading">{{'caseDetails' | translate}}</p>
+        <p class="desc-details">{{selectedCase?.details}}</p>
+      </div>
+
+      <!-- Attachment -->
+      <div class="attachment">
+        <p class="desc-heading">{{'ecgReport' | translate}}</p>
+        <!-- Attachment buttons -->
+        <div class="btn-container">
+          <!-- <ion-button *ngFor="let item of selectedCase?.attachments" class="attch-btn">{{item}}</ion-button> -->
+          <ion-img *ngIf="selectedCase?.imageUrl" (click)="openViewer(selectedCase)" class="attach-image"
+            [src]="selectedCase?.imageUrl" alt="attachment">
+          </ion-img>
+        </div>
+      </div>
+
+      <!-- Answers -->
+      <div class="answer-heading">
+        <p class="desc-heading">{{'answer' | translate}}</p>
+      </div>
+      <div class="case-description dotted-border">
+        <p class="desc-heading">{{'result' | translate}}</p>
+        <p class="desc-details">{{selectedCase?.result}}</p>
+      </div>
+
+      <!-- Next Step -->
+      <div class="case-description dotted-border">
+        <p class="desc-heading">{{'nextStep' | translate}}</p>
+        <p class="desc-details">{{selectedCase?.nextStep}}</p>
+      </div>
+
+       <!-- References -->
+       <div class="case-description dotted-border">
+        <p class="desc-heading">{{'references' | translate}}</p>
+        <p class="desc-details" [innerHTML]="selectedCase?.references"></p>
+      </div>
+
+      <!-- edit / Delete buttons -->
+      <div class="bottom-container">
+        <ion-button (click)="deleteCase()" class="delete-btn">{{'delete'|translate}}</ion-button>
+        <ion-button (click)="editCase()" class="edit-btn">{{'edit'|translate}}</ion-button>
+      </div>
+
+
+    </div>
+
+    <!-- create New Case -->
+    <!-- case -->
+    <div *ngIf="!isDetails" class="case-details">
+
+      <form [formGroup]="creatCaseForm" (keyup.enter)="submit()" class="">
+        <!-- case title -->
+        <div class="heading back-container">
+          <ion-icon (click)="setIsDetails(true)" class="input-icon" src="assets/img/back.svg"></ion-icon>
+          <p class="title">{{'case' | translate}} </p>
+          <div class="input-container">
+            <ion-input id="caseNumber" formControlName="caseNumber" name="caseNumber" type="number" enterkeyhint="next"
+              min="1" [max]="maxValue">
+            </ion-input>
+          </div>
+          <div *ngIf="isSubmit && f.caseNumber.errors" class="error-block-header">
+            <small *ngIf=" f.caseNumber.errors.required">{{ 'caseNumberRequired' | translate
+              }}</small>
+            <small
+              *ngIf=" f.caseNumber.errors.pattern && !(f.caseNumber.errors.required || f.caseNumber.errors.max ||f.caseNumber.errors.min)">{{
+              'invalidCaseNumberPattern' | translate
+              }}</small>
+            <small *ngIf=" f.caseNumber.errors.max">{{ 'invalidCaseNumber' | translate
+              }}{{maxValue}}.</small>
+            <small *ngIf=" f.caseNumber.errors.min">{{ 'invalidCaseNumber' | translate
+              }}{{maxValue}}.</small>
+          </div>
+
+        </div>
+        <!-- Case details -->
+        <div class="case-description">
+          <p class="label-text">{{'caseDetails2' | translate}}</p>
+          <ion-textarea style="height: 100px;" rows="5" id="details" formControlName="details" name="details"
+            class="textarea" autoGrow="true" placeholder="{{'enter'|translate}}"></ion-textarea>
+
+
+          <div *ngIf="isSubmit && f.details.errors" class="error-block">
+            <small *ngIf=" f.details.errors.required">{{ 'caseDetailsRequired' | translate
+              }}</small>
+          </div>
+
+        </div>
+
+        <!-- Attachment -->
+        <div class="attachment">
+          <input id="selectFile" #selectFile style=" display: 'none' " type="file" (change)="handleSelectFile($event)"
+            accept="image/*" />
+          <p class="desc-heading">{{'ecgReport' | translate}}</p>
+          <!-- Attachment buttons -->
+          <div class="btn-container" [ngClass]="{'align-right':attachment}">
+            <ion-img *ngIf="attachment" class="attach-image" (click)="openViewer(attachment)"
+              [src]="attachment?.imagePreviewUrl" alt="attachment">
+            </ion-img>
+
+            <!-- <ion-button *ngIf="attachment" class="attch-btn">{{attachment?.file?.imagePreviewUrl || attachment?.file}}</ion-button> -->
+            <ion-button id="attachEcgReport" (click)="attachImage()" class="attch-btn">{{'attachEcgReport' | translate}}
+            </ion-button>
+
+          </div>
+          <div *ngIf="isSubmit && !attachment" class="error-block">
+            <small>{{ 'attachmentRequired' | translate
+              }}</small>
+          </div>
+        </div>
+
+        <!-- Answers -->
+        <div class="answer-heading">
+          <p class="desc-heading">{{'answer' | translate}}</p>
+        </div>
+        <div class="case-description">
+          <p class="label-text">{{'result2' | translate}}</p>
+          <ion-textarea id="result" rows="5" formControlName="result" name="result" class="textarea" autoGrow="true"
+            placeholder="{{'enter'|translate}}"></ion-textarea>
+
+          <div *ngIf="isSubmit && f.result.errors" class="error-block">
+            <small *ngIf="f.result.errors.required">{{ 'caseAnswerRequired' | translate
+              }}</small>
+          </div>
+        </div>
+
+        <!-- Next Step -->
+        <div class="case-description">
+          <p class="label-text">{{'nextStep2' | translate}}</p>
+          <ion-textarea id="nextStep" rows="5" formControlName="nextStep" name="nextStep" class="textarea"
+            autoGrow="true" placeholder="{{'enter'|translate}}"></ion-textarea>
+
+          <div *ngIf="isSubmit && f.nextStep.errors " class="error-block">
+            <small *ngIf="f.nextStep.errors.required">{{ 'caseNextRequired' | translate
+              }}</small>
+          </div>
+        </div>
+        <!-- References -->
+        <div class="case-description">
+          <p class="label-text">{{'references2' | translate}}</p>
+
+          <editor formControlName="references" name="references" id="references" class="textarea no-border"
+            apiKey="sq6kvq4itc0hhndlq9a9a6y974zcdjxe51lhd7mpr2si72th"
+            [init]="{
+              plugins: 'link autolink',
+              toolbar:'', height : '100%',
+              link_default_protocol: 'https',
+              default_link_target: '_blank',
+              menubar:false,
+              statusbar: false,
+              base_url: '/tinymce',
+              suffix: '.min' }">
+          </editor>
+          <div *ngIf="isSubmit && f.references.errors " class="error-block">
+            <small *ngIf="f.references.errors.required">{{ 'referencesRequired' | translate
+              }}</small>
+          </div>
+        </div>
+
+
+
+        <!-- edit / Delete buttons -->
+        <div class="bottom-container">
+          <ion-button (click)="setIsDetails(true)" id="cancel" class="delete-btn">{{'cancel'|translate}}</ion-button>
+          <ion-button id="submit" (click)="submit()" [disabled]="submitBtnDisabled" class="edit-btn">
+            {{'submit'|translate}}</ion-button>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+</ion-content>

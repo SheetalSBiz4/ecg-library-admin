@@ -1,0 +1,54 @@
+<ion-content class="background">
+
+  <div class="page-container">
+    <!-- Logo -->
+    <p class="logo">{{'appName' | translate}}</p>
+    <p class="greeting">{{'OTPVerificationTitle' | translate}}</p>
+    <p class="message">{{'messageOTP' | translate}}</p>
+
+    <form [formGroup]="optVerificationForm" (keyup.enter)="verifyOtp()" class="form">
+
+      <div class="otp-container">
+        <ion-input onlyNumber [ngClass]="{'not-empty-digit': f.digit1.value && f.digit1.value.length>0 }"
+          class="digit-input" type="tel" #otp1 maxLength="1" formControlName="digit1" name="digit1"
+          (keydown)="otpController2($event,otp2,'')" (keyup)="otpController($event,otp2,'')"></ion-input>
+        <ion-input onlyNumber [ngClass]="{'not-empty-digit': f.digit2.value && f.digit2.value.length>0}"
+          class="digit-input" type="tel" #otp2 maxLength="1" formControlName="digit2" name="digit2"
+          (keydown)="otpController2($event,otp3,otp1)" (keyup)="otpController($event,otp3,otp1)">
+        </ion-input>
+        <ion-input onlyNumber [ngClass]="{'not-empty-digit': f.digit3.value && f.digit3.value.length>0}"
+          class="digit-input" type="tel" #otp3 maxLength="1" formControlName="digit3" name="digit3"
+          (keydown)="otpController2($event,otp4,otp2)" (keyup)="otpController($event,otp4,otp2)">
+        </ion-input>
+        <ion-input onlyNumber [ngClass]="{'not-empty-digit': f.digit4.value && f.digit4.value.length>0}"
+          class="digit-input" type="tel" #otp4 maxLength="1" formControlName="digit4" name="digit4"
+          (keydown)="otpController2($event,otp5,otp3)" (keyup)="otpController($event,otp5,otp3)">
+        </ion-input>
+        <ion-input onlyNumber [ngClass]="{'not-empty-digit': f.digit5.value && f.digit5.value.length>0}"
+          class="digit-input" type="tel" #otp5 maxLength="1" formControlName="digit5" name="digit5"
+          (keydown)="otpController2($event,otp6,otp4)" (keyup)="otpController($event,otp6,otp4)">
+        </ion-input>
+        <ion-input onlyNumber [ngClass]="{'not-empty-digit': f.digit6.value && f.digit6.value.length>0}"
+          class="digit-input" type="tel" #otp6 maxLength="1" formControlName="digit6" name="digit6"
+          (keydown)="otpController2($event,'',otp5)" (keyup)="otpController($event,'',otp5)"></ion-input>
+      </div>
+
+
+      <div class="error-block" *ngIf="isSubmit">
+        <small
+          *ngIf="((f.digit1.errors && f.digit1.errors.required)||(f.digit2.errors && f.digit2.errors.required)||(f.digit3.errors && f.digit3.errors.required)||
+                                   (f.digit4.errors && f.digit4.errors.required)||(f.digit5.errors && f.digit5.errors.required)||(f.digit6.errors && f.digit6.errors.required))">{{
+          'entervalidOtp' | translate }}</small>
+      </div>
+
+      <p (click)="resendCode()" class="resendCode">{{'resendCode' | translate}}</p>
+
+
+      <ion-button [disabled]="submitBtnDisabled" (click)="verifyOtp()">{{ 'submit' | translate }}</ion-button>
+
+    </form>
+
+    <p (click)="goBack()" class="forgotPassword">{{'backToLogin' | translate}}</p>
+  </div>
+
+</ion-content>

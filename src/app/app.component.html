@@ -1,0 +1,28 @@
+<ion-app>
+  <!-- when="(min-width: 1025px)" -->
+  <ion-split-pane when="(min-width: 1025px)"  (ionSplitPaneVisible) = "ionSplitPaneVisible($event)" class="split-pane" contentId="main-content">
+    <ion-menu contentId="main-content" type="overlay">
+      <ion-content color="primary">
+        <p class="side-menu-logo">{{'appName' | translate}}</p>
+
+        <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages; let i = index">
+          <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false"
+            routerLinkActive="selected">
+            <ion-icon slot="start" src="{{selectedUrl == p.url ? p.icon :p.icon_off}}"></ion-icon>
+            <ion-label>{{ p.title | translate }}</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+
+        <div class="logout">
+          <div class="logout-button" (click)="logout()">
+            <ion-icon src="assets/img/logout.svg"></ion-icon>
+            <p class="logout-label">{{'logout' | translate}}</p>
+          </div>
+          <p class="admin-label">{{'EcgAdmin' | translate}}</p>
+        </div>
+
+      </ion-content>
+    </ion-menu>
+    <ion-router-outlet id="main-content"></ion-router-outlet>
+  </ion-split-pane>
+</ion-app>
