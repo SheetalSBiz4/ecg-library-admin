@@ -147,6 +147,12 @@ export class ValidatorService {
           // Validators.maxLength(250)
         ]),
       ],
+      skillLevel: [
+        'select',
+        Validators.compose([
+          Validators.required
+        ]),
+      ],
       details: [
         '',
         Validators.compose([
@@ -175,7 +181,20 @@ export class ValidatorService {
           // Validators.maxLength(250)
         ]),
       ],
-
+      supplement: [
+        '',
+        Validators.compose([
+          // Validators.required,
+          // Validators.maxLength(250)
+        ]),
+      ],
+      isPublish:[
+        '',
+        Validators.compose([
+          // Validators.required,
+          // Validators.maxLength(250)
+        ]),
+      ]
 
     });
   }

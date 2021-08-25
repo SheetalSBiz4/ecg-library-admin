@@ -78,8 +78,8 @@
   "switch":"Switch",
   "references":"References:",
   "references2":"References",
-  "referencesRequired": "Please enter references."
-
-
-
+  "referencesRequired": "Please enter references.",
+  "supplement": "SUPPLEMENT",
+  "supplementRequired": "Please enter supplement.",
+  "publishInTheApp": "PUBLISH IN THE APP"
 }

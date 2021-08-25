@@ -1,15 +1,21 @@
-<ion-header *ngIf="!isSideMenuVisible">
+<ion-header >  
+  <!-- *ngIf="!isSideMenuVisible" -->
   <ion-toolbar color="primary">
-    <ion-buttons slot="start">
+    <!-- <ion-buttons slot="start">
       <ion-menu-button color="light">
       </ion-menu-button>
-    </ion-buttons>
-    <ion-title class="title" color="light">{{'appName'| translate}}</ion-title>
+    </ion-buttons> -->
+    <ion-title class="title" color="light">{{'appName'| translate}}
+    <!-- <div class="logout-button" (click)="logout()"> -->
+      <ion-icon class="logout-cls" (click)="logout()" src="assets/img/logout.svg"> </ion-icon>
+      <p class="logout-label-cls" (click)="logout()">{{'logout' | translate}}</p>
+    <!-- </div> -->
+  </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <div id="container" class="container" [ngClass]="{'side-menu-visible':!isSideMenuVisible}">
+  <div id="container" class="container" >
 
     <div class="case-list">
       <!-- fab placed to the (vertical) center and end -->
@@ -33,7 +39,7 @@
         <ion-icon class="delete-icon" (click)="deleteAllchecked()" *ngIf="showDelete" src="assets/img/delete.svg">
         </ion-icon>
         <ion-icon class="switch-icon" (click)="openModal()" *ngIf="!showDelete && cases.length > 1 "
-          src="assets/img/switch.svg"></ion-icon>
+          src="assets/img/Filter.svg"></ion-icon>
 
       </div>
 
@@ -51,6 +57,8 @@
             <ion-item class="case" *ngIf="item.show" [attr.data-index]="i"
               [ngClass]="{'selected':selectedCase?.index -1  == i}" (click)="setSelectedCase(item,i)">
               <div class="case-container">
+                <img *ngIf="item.isPublish" src="../../../assets/img/publish.svg"/>
+                <div class="not-publish-cls" *ngIf="!item.isPublish" ></div>
                 <div class="checkbox-container">
                   <ion-checkbox mode="ios" slot="start" (click)="itemCheckBox($event)" (ionChange)="checkifChecked()"
                     [(ngModel)]="item.isChecked" name="termsAndConditions">
@@ -98,6 +106,13 @@
       <div class="heading">
         <p class="title">{{'case' | translate}} {{selectedCase?.index}}</p>
       </div>
+
+      <!-- Skill Level  -->   
+      <div class="case-description dotted-border">
+        <p class="desc-heading">{{'skillLevel' | translate}}</p>
+        <p class="desc-details">{{selectedCase?.skillLevel}}</p>
+      </div>
+
       <!-- Case details -->
       <div class="case-description dotted-border">
         <p class="desc-heading">{{'caseDetails' | translate}}</p>
@@ -132,9 +147,15 @@
       </div>
 
        <!-- References -->
-       <div class="case-description dotted-border">
+      <div class="case-description dotted-border">
         <p class="desc-heading">{{'references' | translate}}</p>
         <p class="desc-details" [innerHTML]="selectedCase?.references"></p>
+      </div>
+
+      <!-- Supplement -->
+      <div class="case-description dotted-border">
+        <p class="desc-heading">{{'supplement' | translate}}</p>
+        <p class="desc-details" [innerHTML]="selectedCase?.supplement"></p>
       </div>
 
       <!-- edit / Delete buttons -->
@@ -174,6 +195,23 @@
           </div>
 
         </div>
+        <!-- Skill Level  -->
+        <div class="case-description">
+          <p class="label-text">{{'skillLevel' | translate}}</p>
+          <select class="single-select-cls" id="skillLevel" formControlName="skillLevel" name="skillLevel">
+            <option value="select" selected> select </option>
+            <option value="beginner"> Beginner </option>
+            <option value="intermediate"> Intermediate </option>
+            <option value="advance"> Advance </option>
+            <option value="expert"> Expert </option>
+          </select>
+
+          <div *ngIf="isSubmit && f.skillLevel.errors" class="error-block">
+            <small *ngIf=" f.skillLevel.errors.required">{{ 'caseDetailsRequired' | translate
+              }}</small>
+          </div>
+        </div>
+
         <!-- Case details -->
         <div class="case-description">
           <p class="label-text">{{'caseDetails2' | translate}}</p>
@@ -258,7 +296,33 @@
           </div>
         </div>
 
+        <!-- Supplement -->
+        <div class="case-description">
+          <p class="label-text">{{'supplement' | translate}}</p>
 
+          <editor formControlName="supplement" name="supplement" id="supplement" class="textarea no-border"
+            apiKey="sq6kvq4itc0hhndlq9a9a6y974zcdjxe51lhd7mpr2si72th"
+            [init]="{
+              plugins: 'link autolink',
+              toolbar:'', height : '100%',
+              link_default_protocol: 'https',
+              default_link_target: '_blank',
+              menubar:false,
+              statusbar: false,
+              base_url: '/tinymce',
+              suffix: '.min' }">
+          </editor>
+          <div *ngIf="isSubmit && f.supplement.errors " class="error-block">
+            <small *ngIf="f.supplement.errors.required">{{ 'supplementRequired' | translate }}</small>
+          </div>
+        </div>
+
+         <!-------------- Keep me signed in --------------->
+        <div class="checkbox-container">
+          <ion-checkbox class="checkbox-cls" mode="ios" slot="start" (click)="publishClick()" name="isPublish"
+            formControllName="isPublish"></ion-checkbox>
+          <ion-label class="checkbox-label">{{ 'publishInTheApp' | translate }}</ion-label>
+        </div>
 
         <!-- edit / Delete buttons -->
         <div class="bottom-container">

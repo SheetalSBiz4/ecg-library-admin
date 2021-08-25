@@ -164,6 +164,7 @@ ion-menu ion-item.selected ion-label {
   --side-max-width: 20%;
   --side-min-width: var(--px331);
   --side-width: var(--px331);
+  display: contents;  // hide side menu
 }
 .side-menu-logo {
   margin-top: var(--px42);

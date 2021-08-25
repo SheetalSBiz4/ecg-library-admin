@@ -4,6 +4,7 @@ import { IonReorderGroup, ModalController } from '@ionic/angular';
 import { CommonService, FirebaseService, ValidatorService } from 'src/app/providers/providers';
 import { SwitchCasePage } from '../switch-case/switch-case.page';
 import { ViewerModalComponent } from 'ngx-ionic-image-viewer';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-ecg-cases',
@@ -45,15 +46,14 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   private sequence = [];
   private isaddedbyme = false;
   private isEditOrNew = false;
-
+  public isPublish: boolean;
 
   constructor(
+    private router: Router,
     private commonService: CommonService,
     private validatorService: ValidatorService,
     private firebaseService: FirebaseService,
     private modalController: ModalController
-
-
   ) {
     this.creatCaseForm = this.validatorService.createCaseFormValidator();
     this.SideMenuVisibleSubsription = this.commonService.checkSideMenuVisible().subscribe((value) => {
@@ -62,14 +62,19 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     this.getCases();
     this.setSnapshot();
     // console.log('ssdsd');
-
-
   }
   ionViewWillEnter() {
     this.commonService.enableMenu(true);
   }
 
+/**
+   * logout- function to be executed on press of signout button
+   */
+ public logout() {
+  this.firebaseService.signOut();
+  this.router.navigate(['login'], { replaceUrl: true });
 
+}
 
 
   ngOnInit() {
@@ -405,6 +410,8 @@ export class EcgCasesPage implements OnInit, OnDestroy {
    */
   public editCaseSubmit(uploadUrl, dimensions) {
     const payload = this.creatCaseForm.value;
+    console.log("payload...", payload);
+    
     payload['uploadUrl'] = uploadUrl;
     payload['dimensions'] = dimensions;
     payload['firebaseId'] = this.selectedCase.firebaseId;
@@ -670,6 +677,12 @@ export class EcgCasesPage implements OnInit, OnDestroy {
 
   }
 
+
+  public publishClick () {
+    this.f.isPublish.setValue(!this.f.isPublish.value);
+    // this.isPublish = !this.isPublish;
+  }
+
   /**
    * Function to edit the selected case
    */
@@ -677,6 +690,10 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     this.setIsDetails(false);
     this.isEdit = true;
     this.creatCaseForm.setValue({
+      skillLevel: this.selectedCase.skillLevel,
+      supplement: this.selectedCase.supplement,
+      isPublish: this.selectedCase.isPublish,
+
       details: this.selectedCase.details,
       result: this.selectedCase.result,
       caseNumber: this.selectedCase.index,

@@ -210,6 +210,9 @@ export class FirebaseService {
   public createCase(data) {
     return new Promise((resolve, reject) => {
       let message = {
+        skillLevel: data.skillLevel,
+        supplement: data.supplement,
+        isPublish: data.isPublish,
         details: data.details,
         result: data.result,
         nextStep: data.nextStep,
@@ -245,6 +248,9 @@ export class FirebaseService {
     // console.log('edit', data);
     return new Promise((resolve, reject) => {
       let Case = {
+        skillLevel: data.skillLevel,
+        supplement: data.supplement,
+        isPublish: data.isPublish,
         details: data.details,
         result: data.result,
         nextStep: data.nextStep,

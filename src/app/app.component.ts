@@ -31,7 +31,7 @@ export class AppComponent {
     private firebaseService: FirebaseService,
     private commonService: CommonService
   ) {
-    this.commonService.enableMenu(false);
+    // this.commonService.enableMenu(false);
     /**
       * This function will call on route change and sidbar menu selection is managed
       * */

@@ -216,7 +216,8 @@ p {
 }
 
 .background {
-  --background: var(--ion-color-primary) url("assets/img/background.png");
+  // --background: var(--ion-color-primary) url("assets/img/background.png");
+  --background: #6098ff;  
 }
 
 @media only screen and (max-width: 600px) {
