@@ -9,8 +9,8 @@ export class AppSetting {
     * Method to return environment name
     */
    public static get ENVIRONMENT_NAME(): string {
-      // return 'Production';
-      return 'Test';
+      return 'Production';
+      // return 'Test';
       // return 'Local';
 
    }

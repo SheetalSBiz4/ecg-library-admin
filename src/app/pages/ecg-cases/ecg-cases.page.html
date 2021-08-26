@@ -198,12 +198,12 @@
         <!-- Skill Level  -->
         <div class="case-description">
           <p class="label-text">{{'skillLevel' | translate}}</p>
-          <select class="single-select-cls" id="skillLevel" formControlName="skillLevel" name="skillLevel">
-            <option value="select" selected> select </option>
-            <option value="beginner"> Beginner </option>
-            <option value="intermediate"> Intermediate </option>
-            <option value="advance"> Advance </option>
-            <option value="expert"> Expert </option>
+          <select class="single-select-cls" placeholder="Select" id="skillLevel" formControlName="skillLevel" name="skillLevel">
+            <!-- <option value="select" selected> select </option> -->
+            <option value="Beginner"> Beginner </option>
+            <option value="Intermediate"> Intermediate </option>
+            <option value="Advance"> Advance </option>
+            <option value="Expert"> Expert </option>
           </select>
 
           <div *ngIf="isSubmit && f.skillLevel.errors" class="error-block">
@@ -319,8 +319,10 @@
 
          <!-------------- Keep me signed in --------------->
         <div class="checkbox-container">
-          <ion-checkbox class="checkbox-cls" mode="ios" slot="start" (click)="publishClick()" name="isPublish"
-            formControllName="isPublish"></ion-checkbox>
+          <!-- <ion-checkbox class="checkbox-cls" mode="ios" slot="start" (click)="publishClick()" name="isPublish"
+          checked="{{isPublish}}"></ion-checkbox>{{isPublish}} -->
+          <input type="checkbox" class="checkbox-cls" mode="ios" slot="start" (click)="publishClick()" name="isPublish"
+          checked="{{f.isPublish.value}}">
           <ion-label class="checkbox-label">{{ 'publishInTheApp' | translate }}</ion-label>
         </div>
 

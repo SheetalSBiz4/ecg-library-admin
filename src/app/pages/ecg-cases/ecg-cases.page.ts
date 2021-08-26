@@ -46,7 +46,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   private sequence = [];
   private isaddedbyme = false;
   private isEditOrNew = false;
-  public isPublish: boolean;
+  public isPublish: boolean = false;
 
   constructor(
     private router: Router,
@@ -95,6 +95,8 @@ export class EcgCasesPage implements OnInit, OnDestroy {
 
     const selectedPosition = this.selectedCase ? this.selectedCase.index - 1 : 0;
     const casesLength = this.cases ? this.cases.length : 0
+    console.log("this.selectedCase...", this.selectedCase);
+    
     if (selectedPosition == 0 && casesLength > 0) {
       let index = this.itemsPerPage * (this.currentPage - 1);
       this.setSelectedCase(this.cases[index], index);
@@ -457,12 +459,23 @@ export class EcgCasesPage implements OnInit, OnDestroy {
    * submit - function to be executed on press of submit button
    */
   public submit() {
+    if(this.f.isPublish.value) {
+      this.creatCaseForm.value.isPublish = true;
+    } else {
+      this.creatCaseForm.value.isPublish = false;
+    }
+    console.log("this.creatCaseForm.value..", this.creatCaseForm.value.isPublish);
     if (this.isEdit) {
       // edit Related code
       this.isSubmit = true;
       this.submitBtnDisabled = true;
 
       this.commonService.trimForm(this.creatCaseForm);
+      if(this.f.isPublish.value) {
+        this.creatCaseForm.value.isPublish = true;
+      } else {
+        this.creatCaseForm.value.isPublish = false;
+      }
       if (this.creatCaseForm.valid && this.attachment) {
         this.commonService.showLoading();
         if (this.attachment.fromFirebase) {
@@ -483,7 +496,11 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     } else {
       this.isSubmit = true;
       this.submitBtnDisabled = true;
-
+      if(this.f.isPublish.value) {
+        this.creatCaseForm.value.isPublish = true;
+      } else {
+        this.creatCaseForm.value.isPublish = false;
+      }
       this.commonService.trimForm(this.creatCaseForm);
       if (this.creatCaseForm.valid && this.attachment) {
         this.commonService.showLoading();
@@ -492,7 +509,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
           payload['uploadUrl'] = uploadUrl;
           payload['dimensions'] = this.attachment.dimensions;
           this.isaddedbyme = true;
-          this.firebaseService.createCase(payload).then((response) => {
+          this.firebaseService.createCase(payload).then((response) => {            
             // this.firebaseService.getMediaUrl(payload.uploadUrl).then((url) => {
             //   payload.imageUrl = url;
             //   this.commonService.hideLoading();
@@ -679,6 +696,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
 
 
   public publishClick () {
+    console.log("this.f.isPublish.value..", this.f.isPublish.value);
     this.f.isPublish.setValue(!this.f.isPublish.value);
     // this.isPublish = !this.isPublish;
   }
@@ -689,6 +707,8 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   public editCase() {
     this.setIsDetails(false);
     this.isEdit = true;
+    console.log("this.selectedCase...",this.selectedCase);
+
     this.creatCaseForm.setValue({
       skillLevel: this.selectedCase.skillLevel,
       supplement: this.selectedCase.supplement,

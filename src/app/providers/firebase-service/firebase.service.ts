@@ -223,7 +223,7 @@ export class FirebaseService {
         dimensions: data.dimensions,
       };
       firestore
-        .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Cases`)
+        .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${message.skillLevel}/Cases`)
         .add(message)
         .then((res) => {
           // console.log("res", res);
@@ -260,7 +260,7 @@ export class FirebaseService {
         dimensions: data.dimensions,
       };
       firestore
-        .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Cases`)
+        .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${Case.skillLevel}/Cases`)
         .doc(data.firebaseId)
         .set(Case, { merge: true })
         .then((res) => {
@@ -295,7 +295,7 @@ export class FirebaseService {
         updated_time: firebase.firestore.FieldValue.serverTimestamp(),
       };
       firestore
-        .doc(`env/${AppSetting.ENVIRONMENT_NAME}/Stats/totalStats`)
+        .doc(`env/${AppSetting.ENVIRONMENT_NAME}/Level/Beginner/Stats/totalStats`)
         .set(updateDoc, { merge: true })
         .then((res) => {
           resolve('Success');
@@ -319,7 +319,7 @@ export class FirebaseService {
         updated_time: firebase.firestore.FieldValue.serverTimestamp(),
       };
       firestore
-        .doc(`env/${AppSetting.ENVIRONMENT_NAME}/Stats/totalStats`)
+        .doc(`env/${AppSetting.ENVIRONMENT_NAME}/Level/Beginner/Stats/totalStats`)
         .set(updateDoc, { merge: true })
         .then((res) => {
           resolve('Success');
@@ -334,7 +334,7 @@ export class FirebaseService {
   public deletCase(data) {
     return new Promise((resolve, reject) => {
       firestore
-        .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Cases`)
+        .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${data.skillLevel}/Cases`)
         .doc(`${data.firebaseId}`)
         .delete()
         .then((res) => {
@@ -363,7 +363,7 @@ export class FirebaseService {
   public getCases2(limit, isLoadPrevious) {
     return new Promise((resolve, reject) => {
       let quary = firestore
-        .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Cases`)
+        .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Level/Beginner/Cases`)
         .orderBy("created_time");
       if (isLoadPrevious && myRecentlastVisible) {
         quary = quary.startAfter(myRecentlastVisible).limit(limit);
@@ -406,7 +406,7 @@ export class FirebaseService {
   public async getCases(isPagination, limit, isLoadPrevious) {
     return new Promise((resolve, reject) => {
       firestore
-        .doc(`env/${AppSetting.ENVIRONMENT_NAME}/Stats/totalStats`)
+        .doc(`env/${AppSetting.ENVIRONMENT_NAME}/Level/Beginner/Stats/totalStats`)
         .get()
         .then((querySnapshot) => {
           if (querySnapshot) {
@@ -431,7 +431,7 @@ export class FirebaseService {
 
               let itemRefs = sequenceToGetData.map(caseId => {
                 return firestore
-                  .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Cases`)
+                  .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Level/Beginner/Cases`)
                   .doc(caseId)
                   .get();
               });
@@ -477,7 +477,7 @@ export class FirebaseService {
           sequence: firebase.firestore.FieldValue.arrayRemove(id),
         }
         let query;
-        query = firestore.doc(`env/${AppSetting.ENVIRONMENT_NAME}/Stats/totalStats`)
+        query = firestore.doc(`env/${AppSetting.ENVIRONMENT_NAME}/Level/Beginner/Stats/totalStats`)
         query.set(updateDoc, { merge: true })
           .then((res) => {
             resolve(res);
@@ -487,7 +487,7 @@ export class FirebaseService {
       });
     } else if (action == 'add') {
       let query;
-      query = firestore.doc(`env/${AppSetting.ENVIRONMENT_NAME}/Stats/totalStats`);
+      query = firestore.doc(`env/${AppSetting.ENVIRONMENT_NAME}/Level/Beginner/Stats/totalStats`);
       return firestore.runTransaction((transaction) => {
         // This code may get re-run multiple times if there are conflicts.
         return transaction.get(query).then((tempDoc) => {
@@ -524,7 +524,7 @@ export class FirebaseService {
   public setTotalSnapshot(callback) {
     this.removeTotalSnapshot();
     mySnapshot = firestore
-      .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Stats`)
+      .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Level/Beginner/Stats`)
       .orderBy("updated_time", "desc")
       .limit(1)
       .onSnapshot(
@@ -555,7 +555,7 @@ export class FirebaseService {
   public setNewSnapshot(callback) {
     this.removeNewSnapshot();
     newSnapShot = firestore
-      .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Cases`)
+      .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Level/Beginner/Cases`)
       .orderBy("updated_time", "desc")
       .limit(1)
       .onSnapshot(
