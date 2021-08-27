@@ -46,7 +46,7 @@
       <!-------------- Keep me signed in --------------->
       <div class="checkbox-container">
         <ion-checkbox mode="ios" slot="start" (click)="checkBox()" name="termsAndConditions"
-          formControllName="termsAndConditions"></ion-checkbox>
+        checked="{{termsAndConditions}}" formControllName="termsAndConditions"></ion-checkbox>
         <ion-label class="checkbox-label">{{ 'rememberMe' | translate }}</ion-label>
       </div>
 

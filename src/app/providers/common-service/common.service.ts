@@ -77,7 +77,7 @@ export class CommonService {
   async showLoading(message?: string) {
     this.isLoading = true;
     this.loadingCtrl.create({
-      message: `<ion-img src='/assets/img/loader.gif' class="app-loader-icon"></ion-img>`,
+      message: `<ion-spinner name="crescent" color="tertiary" class="app-loader-icon"></ion-spinner>`,
       duration: 30000,
       translucent: true,
       cssClass: 'custom-loading',

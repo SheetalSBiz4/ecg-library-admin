@@ -65,7 +65,7 @@ export class SwitchCasePage implements OnInit {
     if (this.switchForm.valid) {
       this.commonService.showLoading();
       const payload = this.switchForm.value;
-      this.firebaseService.switchCase(payload.to - 1, payload.from - 1)
+      this.firebaseService.switchCase(payload.skillLevel, payload.to - 1, payload.from - 1)
       .then(()=>{
         this.commonService.translateText('caseSwitched').subscribe((msg) => {
           this.commonService.showAlert('Success', msg);

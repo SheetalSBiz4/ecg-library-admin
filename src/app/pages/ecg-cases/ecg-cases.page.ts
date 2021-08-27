@@ -39,6 +39,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   public cases: any = [];
   private extraCases: any = [];
   public attachment: any = {};
+  public skillLevel: '';
   private pageLimit = 100;
   public itemsPerPage = 10;
   public currentPage = 1;
@@ -47,6 +48,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   private isaddedbyme = false;
   private isEditOrNew = false;
   public isPublish: boolean = false;
+  public skillLevelOption: any;
 
   constructor(
     private router: Router,
@@ -138,7 +140,9 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     this.commonService.showLoading();
     this.selectedCase = undefined;
     this.attachment = undefined;
-    this.firebaseService.getCases(false, this.pageLimit, false).then((res: any) => {
+    this.firebaseService.getCases("Beginner", false, this.pageLimit, false).then((res: any) => {
+      console.log("res...", res);
+
       res.forEach(tempDoc => {
         tempDoc.attachments.forEach(element => {
           this.firebaseService.getMediaUrl(element).then((url) => {
@@ -200,8 +204,6 @@ export class EcgCasesPage implements OnInit, OnDestroy {
 
         } else {
           this.cases.push(doc);
-          // this.cases[existingIndex] = { ...this.cases[existingIndex], ...doc };
-          // show msg  this.cases.push(doc);if added by this user
           if (this.isaddedbyme) {
             this.isaddedbyme = false;
             this.commonService.translateText('caseEdited').subscribe((msg) => {
@@ -210,25 +212,18 @@ export class EcgCasesPage implements OnInit, OnDestroy {
           }
         }
         this.setIsDetails(true);
-        // this.refreshSelectedCase();
-        // console.log(3);
         this.refreshCases('new');
         this.commonService.hideLoading();
         // this.getCases();
       })
-
-
-
-
       // this.refreshCases();
-
     })
 
   }
 
   public loadData = (event) => {
 
-    this.firebaseService.getCases(false, this.pageLimit, true).then((res: any) => {
+    this.firebaseService.getCases("Beginner", false, this.pageLimit, true).then((res: any) => {
       if (res.length > 0) {
         res.forEach(tempDoc => {
           tempDoc.attachments.forEach(element => {
@@ -355,10 +350,6 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     this.extraCases = existingCases;
     this.cases = newCases;
     this.refreshSelectedCase();
-    // console.log('Cases length', this.cases.length);
-    // console.log('ExtraCases length', existingCases.length);
-
-
   }
 
   public absoluteIndex(indexOnPage: number): number {
@@ -378,8 +369,6 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     newCases.splice(to, 0, itemMove);
     ev.detail.complete();
     this.cases = newCases;
-    // this.refreshSelectedCase();
-    // this.refreshCases();
     this.firebaseService.reorderCase(to, from).then(() => {
       this.commonService.hideLoading();
     })
@@ -420,36 +409,6 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     payload['oldCaseNumber'] = this.selectedCase.index;
     this.isaddedbyme = true;
     this.firebaseService.editCase(payload).then((response) => {
-      // this.firebaseService.getMediaUrl(payload.uploadUrl).then((url) => {
-      //   payload.imageUrl = url;
-      //   this.commonService.hideLoading();
-      // this.commonService.translateText('caseEdited').subscribe((msg) => {
-      //   this.commonService.showAlert('Success', msg);
-      // });
-      // this.setIsDetails(true);
-      //   let Case = {
-      //     details: payload.details,
-      //     result: payload.result,
-      //     // nextStep: payload.nextStep,
-      //     attachments: [payload.uploadUrl],
-      //     imageUrl: payload.imageUrl
-      //   };
-      //   this.selectedCase = { ...this.selectedCase, ...Case };
-      //   this.cases[this.selectedCase.index - 1] = this.selectedCase;
-      //   if (response) {
-      //     this.reOrderLocally(payload.caseNumber - 1, payload.oldCaseNumber - 1);
-      //   }
-      // this.refreshSelectedCase();
-      //   this.refreshCases();
-      //   // this.getCases();
-      // })
-      //   .catch((err) => {
-      //     console.error(err);
-      //   });
-
-
-
-
     })
       .catch((err) => {
         console.error(err);
@@ -509,31 +468,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
           payload['uploadUrl'] = uploadUrl;
           payload['dimensions'] = this.attachment.dimensions;
           this.isaddedbyme = true;
-          this.firebaseService.createCase(payload).then((response) => {            
-            // this.firebaseService.getMediaUrl(payload.uploadUrl).then((url) => {
-            //   payload.imageUrl = url;
-            //   this.commonService.hideLoading();
-            //   this.commonService.translateText('caseAdded').subscribe((msg) => {
-            //     this.commonService.showAlert('Success', msg);
-            //   });
-            //   this.setIsDetails(true);
-            //   let Case = {
-            //     details: payload.details,
-            //     result: payload.result,
-            //     // nextStep: payload.nextStep,
-            //     attachments: [payload.uploadUrl],
-            //     imageUrl: payload.imageUrl,
-            //     firebaseId: response
-            //   };
-            //   this.cases.splice(payload.caseNumber - 1, 0, Case);
-            //   this.refreshSelectedCase();
-            //   // this.refreshCases();
-            //   // this.getCases();
-            // })
-            //   .catch((err) => {
-            //     console.error(err);
-            //   });
-            // this.getCases();
+          this.firebaseService.createCase(payload).then((response) => {
           })
             .catch((err) => {
               console.error(err);
@@ -579,7 +514,6 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   public handleSelectFile = (e) => {
     e.preventDefault();
     var file = e.target.files[0];
-    // handleFireBaseUpload(file);
     var tempMediaType = "image";
     tempMediaType = file != null ? file.type.split("/")[0] : tempMediaType;
     var tempSize = 0;
@@ -640,11 +574,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
           this.commonService.translateText('caseDeleted').subscribe((msg) => {
             this.commonService.showAlert('Success', msg);
           });
-          // this.cases.splice(this.selectedCase.index - 1, 1);
           this.selectedCase = undefined;
-          // this.refreshSelectedCase();
-          // this.refreshCases();
-          // this.getCases();
         })
 
       }, () => {
@@ -666,23 +596,12 @@ export class EcgCasesPage implements OnInit, OnDestroy {
           }
         });
         Promise.all(promises).then(() => {
-          // this.getCases();
-
-          // for (let i = 0; i < this.cases.length;) {
-          //   if (this.cases[i].isChecked) {
-          //     this.cases.splice(i, 1);
-          //   } else {
-          //     i++;
-          //   }
-          // }
           this.commonService.hideLoading();
           this.commonService.translateText('casesDeleted').subscribe((msg) => {
             this.commonService.showAlert('Success', msg);
           });
           this.showDelete = false;
           this.selectAll = false;
-          // this.refreshSelectedCase();
-          // this.refreshCases();
         })
           .catch((err) => {
             console.error(err);
@@ -743,7 +662,6 @@ export class EcgCasesPage implements OnInit, OnDestroy {
    * pageChanged
    */
   public pageChanged(e) {
-    // console.log(e);
     this.currentPage = e;
   }
 
@@ -767,12 +685,10 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   }
 
   public openModal = async () => {
-
     const optionModal = await this.modalController.create({
       component: SwitchCasePage,
       componentProps: {
         maxValue: this.activeCount
-
       },
       cssClass: 'switch-case',
       backdropDismiss: false
@@ -780,13 +696,9 @@ export class EcgCasesPage implements OnInit, OnDestroy {
 
     optionModal.onDidDismiss().then((dataReturned) => {
       if (dataReturned.data !== null) {
-        // console.log('dataReturned', dataReturned);
-
-
       }
     });
     return await optionModal.present();
-
   }
 
   async openViewer(selectedCase) {
@@ -804,20 +716,13 @@ export class EcgCasesPage implements OnInit, OnDestroy {
           setWrapperSize:true,
           height:selectedCase.dimensions ? selectedCase.dimensions.height : null,
           width:selectedCase.dimensions ? selectedCase.dimensions.width: null,
-          // touchEventsTarget:"wrapper"
-        }
+         }
       },
       cssClass: ['ion-img-viewer', 'custom-modal-image-viewer'] ,
       keyboardClose: true,
       showBackdrop: true,
     });
-    // modal.style.setProperty('--height', selectedCase.dimensions.height);
-    // modal.style.setProperty('--width', selectedCase.dimensions.width);
-    // modal.style.height =selectedCase.dimensions ? selectedCase.dimensions.height : null;
-    // modal.style.width =selectedCase.dimensions ? selectedCase.dimensions.width : null;
     await modal.present();
-    // console.log('return');
-
     var x = document.getElementsByClassName("custom-modal-image-viewer") ;
     let mod = x[0] as HTMLBaseElement;
     mod.style.setProperty('--height', selectedCase.dimensions.height+'px');

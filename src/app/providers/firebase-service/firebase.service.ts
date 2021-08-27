@@ -227,7 +227,7 @@ export class FirebaseService {
         .add(message)
         .then((res) => {
           // console.log("res", res);
-          this.updateCount(1, 'add', res.id, data.caseNumber - 1).then(() => {
+          this.updateCount(message.skillLevel, 1, 'add', res.id, data.caseNumber - 1).then(() => {
             resolve(res.id);
           }).catch((err) => {
             reject(err);
@@ -236,7 +236,6 @@ export class FirebaseService {
         .catch((error) => {
           reject(error);
         });
-
     });
 
   }
@@ -310,7 +309,7 @@ export class FirebaseService {
   /**
    * reorderCase - function to reorder the case in firebase
    */
-  public switchCase(to, from) {
+  public switchCase(skillLevel, to, from) {
     return new Promise((resolve, reject) => {
       [this.sequence[to], this.sequence[from]] = [this.sequence[from], this.sequence[to]];
 
@@ -319,7 +318,7 @@ export class FirebaseService {
         updated_time: firebase.firestore.FieldValue.serverTimestamp(),
       };
       firestore
-        .doc(`env/${AppSetting.ENVIRONMENT_NAME}/Level/Beginner/Stats/totalStats`)
+        .doc(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${skillLevel}/Stats/totalStats`)
         .set(updateDoc, { merge: true })
         .then((res) => {
           resolve('Success');
@@ -343,7 +342,7 @@ export class FirebaseService {
           });
           // to reduce the loaded count in case of delete
           this.loadedTill--;
-          this.updateCount(-1, 'delete', data.firebaseId, data.index - 1).then(() => {
+          this.updateCount(data.skillLevel, -1, 'delete', data.firebaseId, data.index - 1).then(() => {
             resolve('Success');
           }).catch((err) => {
             reject(err);
@@ -358,55 +357,12 @@ export class FirebaseService {
   }
 
   /**
-    * getRecentMessages -Function to get the list of friends the user is chating with
-    */
-  public getCases2(limit, isLoadPrevious) {
-    return new Promise((resolve, reject) => {
-      let quary = firestore
-        .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Level/Beginner/Cases`)
-        .orderBy("created_time");
-      if (isLoadPrevious && myRecentlastVisible) {
-        quary = quary.startAfter(myRecentlastVisible).limit(limit);
-      } else {
-        myRecentlastVisible = "";
-        quary = quary.limit(limit);
-      }
-      quary
-        .get()
-        .then((querySnapshot) => {
-          if (querySnapshot) {
-            myRecentlastVisible =
-              querySnapshot.docs[querySnapshot.docs.length - 1];
-            let dataMsgs = [];
-            querySnapshot?.forEach((doc) => {
-              if (doc?.data()) {
-                const tempDoc = doc.data({ serverTimestamps: "estimate" });
-                tempDoc.created_time = this.toDate(tempDoc.created_time);
-                tempDoc.updated_time = this.toDate(tempDoc.updated_time);
-                tempDoc.firebaseId = doc.id;
-
-                dataMsgs.push(tempDoc);
-              }
-            });
-            resolve(dataMsgs);
-          } else {
-            resolve([]);
-          }
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    });
-  }
-
-
-  /**
    * getCase2 - function to get the ordered list of data based on sequence from array
    */
-  public async getCases(isPagination, limit, isLoadPrevious) {
+  public async getCases(skillLevel, isPagination, limit, isLoadPrevious) {
     return new Promise((resolve, reject) => {
       firestore
-        .doc(`env/${AppSetting.ENVIRONMENT_NAME}/Level/Beginner/Stats/totalStats`)
+        .doc(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${skillLevel}/Stats/totalStats`)
         .get()
         .then((querySnapshot) => {
           if (querySnapshot) {
@@ -467,7 +423,7 @@ export class FirebaseService {
   /**
    * name
    */
-  public updateCount(count, action, id: any, caseNumber) {
+  public updateCount(skillLevel, count, action, id: any, caseNumber) {
     let updateDoc;
     if (action == 'delete') {
       return new Promise((resolve, reject) => {
@@ -477,7 +433,7 @@ export class FirebaseService {
           sequence: firebase.firestore.FieldValue.arrayRemove(id),
         }
         let query;
-        query = firestore.doc(`env/${AppSetting.ENVIRONMENT_NAME}/Level/Beginner/Stats/totalStats`)
+        query = firestore.doc(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${skillLevel}/Stats/totalStats`)
         query.set(updateDoc, { merge: true })
           .then((res) => {
             resolve(res);
@@ -487,7 +443,7 @@ export class FirebaseService {
       });
     } else if (action == 'add') {
       let query;
-      query = firestore.doc(`env/${AppSetting.ENVIRONMENT_NAME}/Level/Beginner/Stats/totalStats`);
+      query = firestore.doc(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${skillLevel}/Stats/totalStats`);
       return firestore.runTransaction((transaction) => {
         // This code may get re-run multiple times if there are conflicts.
         return transaction.get(query).then((tempDoc) => {
