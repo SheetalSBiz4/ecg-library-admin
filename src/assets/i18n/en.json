@@ -64,6 +64,7 @@
   "caseDetails2":"Case Details",
   "noData":"There are no case(s) added yet",
   "caseAdded":"Case added successfully.",
+  "selectCurrentSkillLevl": "Please select current skill level.",
   "caseDeleted":"Case deleted successfully.",
   "casesDeleted":"Case(s) deleted successfully.",
   "caseEdited":"Case edited successfully.",

@@ -209,7 +209,7 @@
         <div class="case-description">
           <p class="label-text">{{'skillLevel' | translate}}</p>
 
-          <select class="single-select-cls" placeholder="Select" id="skillLevel" formControlName="skillLevel" name="skillLevel" (change)="changeSkill(this.creatCaseForm.value.skillLevel)">
+          <select class="single-select-cls" placeholder="Select" id="skillLevel" formControlName="skillLevel" name="skillLevel" (change)="changeSkill($event)">
             <option *ngFor="let skill of skillLevelOption" value="{{ skill.value }}"> {{ skill.name }} </option>
             <!-- <option value="Beginner"> Beginner </option>
             <option value="Intermediate"> Intermediate </option>

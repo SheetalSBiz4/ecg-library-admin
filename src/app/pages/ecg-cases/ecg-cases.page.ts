@@ -92,11 +92,16 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     }
   }
 
-  changeSkill (skillLevelSelected) {
+  changeSkill (event) {
+    var skillLevelSelected = event.target.value;
     console.log("skillLevelValue...", this.skillLevelValue);
     console.log("skillLevelSelected...", skillLevelSelected);
     if(this.skillLevelValue != skillLevelSelected){
-      skillLevelSelected = this.skillLevelValue
+      event.target.value = this.skillLevelValue;  
+      console.log(event.target.value);
+      this.commonService.translateText('selectCurrentSkillLevl').subscribe((msg) => {
+        this.commonService.showAlert('Success', msg);
+      });
     }
   }
 
