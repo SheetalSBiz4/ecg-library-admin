@@ -206,5 +206,35 @@ export class CommonService {
     await alert.present();
   }
 
-
+  /**
+   * Function to show a default alert with custom message
+   * @param message
+   */
+   public async showConfirmationWithButton(title, message, confirmCallback, cancelCallBack, yesBtnText?: any, noBtnText?: any) {
+    let existingALert = await this.checkIfAlertExist();
+    if (existingALert) {
+      existingALert.dismiss();
+    }
+    const alert = await this.alertController.create({
+      cssClass: 'ecg-logout-alert',
+      header: '',
+      message: message,
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel',
+          handler: () => {
+            cancelCallBack && cancelCallBack();
+          }
+        },
+        {
+          text: 'Yes',
+          handler: () => {
+            confirmCallback && confirmCallback();
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
 }

@@ -59,9 +59,17 @@ export class AppComponent {
    * logout- function to be executed on press of signout button
    */
   public logout() {
-    this.firebaseService.signOut();
-    this.router.navigate(['login'], { replaceUrl: true });
-
+    this.commonService.showConfirmation(
+      "Logout",
+      "Are you sure you want to logout?",
+      () => {
+        console.log("enter 1");
+        
+        // this.firebaseService.signOut();
+        // this.router.navigate(['login'], { replaceUrl: true });
+      }, () => {
+        console.log("enter 2");
+      }, "Yes");
   }
 
   /**

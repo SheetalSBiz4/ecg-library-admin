@@ -387,7 +387,7 @@ export class FirebaseService {
 
               let itemRefs = sequenceToGetData.map(caseId => {
                 return firestore
-                  .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Level/Beginner/Cases`)
+                  .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${skillLevel}/Cases`)
                   .doc(caseId)
                   .get();
               });
@@ -477,10 +477,10 @@ export class FirebaseService {
    * setRecentMessageSnapshot - function to set the snapshot for recent messsage
    * so to get updates for any new recent messages
    */
-  public setTotalSnapshot(callback) {
+  public setTotalSnapshot(filterValue, callback) {
     this.removeTotalSnapshot();
     mySnapshot = firestore
-      .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Level/Beginner/Stats`)
+      .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${filterValue}/Stats`)
       .orderBy("updated_time", "desc")
       .limit(1)
       .onSnapshot(

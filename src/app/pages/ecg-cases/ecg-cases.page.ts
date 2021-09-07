@@ -39,7 +39,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   public cases: any = [];
   private extraCases: any = [];
   public attachment: any = {};
-  public skillLevel: '';
+  public skillLevel: any;
   private pageLimit = 100;
   public itemsPerPage = 10;
   public currentPage = 1;
@@ -48,7 +48,15 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   private isaddedbyme = false;
   private isEditOrNew = false;
   public isPublish: boolean = false;
-  public skillLevelOption: any;
+  public skillLevelOption = [
+    {name: 'Beginner', value:'Beginner', selected:true},
+    {name: 'Intermediate', value:'Intermediate'},
+    {name: 'Advance', value:'Advance'},
+    {name: 'Expert', value:'Expert'}
+  ];
+  public isFilterOpen: boolean = false;
+  public isBeginner: boolean = true;
+  public skillLevelValue = 'Beginner';
 
   constructor(
     private router: Router,
@@ -60,22 +68,75 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     this.creatCaseForm = this.validatorService.createCaseFormValidator();
     this.SideMenuVisibleSubsription = this.commonService.checkSideMenuVisible().subscribe((value) => {
       this.isSideMenuVisible = value;
-    });
-    this.getCases();
-    this.setSnapshot();
+    });   
+
+    this.getCases('Beginner');
+    this.setSnapshot('Beginner');
     // console.log('ssdsd');
   }
   ionViewWillEnter() {
+    this.skillLevel = 'Beginner';
     this.commonService.enableMenu(true);
+    var d = document.getElementById('Beginner');
+    d.className = "filter-label-cls-active";
+  }
+
+  openForm() {
+    console.log("openForm....");
+    if(!this.isFilterOpen) {    
+      document.getElementById("myForm").style.display = "block";
+      this.isFilterOpen = true;
+    } else {
+      document.getElementById("myForm").style.display = "none";
+      this.isFilterOpen = false;
+    }
+  }
+
+  changeSkill (skillLevelSelected) {
+    console.log("skillLevelValue...", this.skillLevelValue);
+    console.log("skillLevelSelected...", skillLevelSelected);
+    if(this.skillLevelValue != skillLevelSelected){
+      skillLevelSelected = this.skillLevelValue
+    }
+  }
+
+  applyFilter(value) {
+    var filterArray = ['Beginner', 'Intermediate', 'Advance', 'Expert']
+    if(value) {
+      this.skillLevelValue = value;
+      var d = document.getElementById(value);
+      d.className = "filter-label-cls-active";
+    }
+    for(let i=0; i<4; i++){
+      if(filterArray[i] != value) {
+        var d = document.getElementById(filterArray[i]);
+        d.className = "filter-label-cls";
+      }
+    }
+    
+    document.getElementById("myForm").style.display = "none";
+    this.isFilterOpen = false;
+
+    this.getCases(value);
+    this.setSnapshot(value);
   }
 
 /**
    * logout- function to be executed on press of signout button
    */
  public logout() {
-  this.firebaseService.signOut();
-  this.router.navigate(['login'], { replaceUrl: true });
-
+  this.commonService.showConfirmationWithButton(
+    "Logout",
+    "Are you sure you want to logout?",
+    () => {
+      console.log("enter 1");      
+      this.firebaseService.signOut();
+      this.router.navigate(['login'], { replaceUrl: true });
+    }, () => {
+      console.log("enter 2");
+    }, () => {
+      console.log("enter 3");
+    });
 }
 
 
@@ -114,8 +175,8 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   /**
    * setSnapshot
    */
-  public setSnapshot() {
-    this.firebaseService.setTotalSnapshot((doc) => {
+  public setSnapshot(filterValue) {
+    this.firebaseService.setTotalSnapshot(filterValue, (doc) => {
       this.sequence = doc.sequence;
       this.activeCount = this.sequence.length;
       const total = this.activeCount / this.itemsPerPage;
@@ -135,12 +196,12 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   /**
    * getCases - function to get the cases from firebase
    */
-  public getCases() {
+  public getCases(filterValue) {
     // this.loading = true;
     this.commonService.showLoading();
     this.selectedCase = undefined;
     this.attachment = undefined;
-    this.firebaseService.getCases("Beginner", false, this.pageLimit, false).then((res: any) => {
+    this.firebaseService.getCases(filterValue, false, this.pageLimit, false).then((res: any) => {
       console.log("res...", res);
 
       res.forEach(tempDoc => {
@@ -503,7 +564,6 @@ export class EcgCasesPage implements OnInit, OnDestroy {
 
   }
 
-
   private isFileImage(file) {
     return file && file['type'].split('/')[0] === 'image';
   }
@@ -556,8 +616,6 @@ export class EcgCasesPage implements OnInit, OnDestroy {
       };
     };
     this.selectFile.nativeElement.value = "";
-
-
   };
 
   /**
@@ -626,7 +684,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   public editCase() {
     this.setIsDetails(false);
     this.isEdit = true;
-    console.log("this.selectedCase...",this.selectedCase);
+    console.log("this.selectedCase...editcase...",this.selectedCase);
 
     this.creatCaseForm.setValue({
       skillLevel: this.selectedCase.skillLevel,
@@ -731,6 +789,5 @@ export class EcgCasesPage implements OnInit, OnDestroy {
 
     return ;
   }
-
 
 }

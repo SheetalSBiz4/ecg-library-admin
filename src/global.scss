@@ -414,6 +414,101 @@ p {
     line-height: var(--px18);
   }
 }
+.ecg-logout-alert {
+  .alert-wrapper {
+    --max-width: var(--px408);
+    width: 90%;
+    min-height: var(--px169);
+    box-shadow: 0 0 var(--px13) rgba(0, 0, 0, 0.05);
+    border-radius: var(--px20);
+    border: var(--px1) solid #eae7e7;
+    background-color: #ffffff;
+    .alert-head {
+      // display: none;
+      padding-top: 0px;
+      padding-bottom: 0px;
+    }
+    .alert-message {
+      max-height: auto;
+      padding-inline-start: var(--px29);
+      padding-inline-end: var(--px27);
+      padding-top: var(--px60) !important;
+
+      color: var(--color010101);
+      font-family: "Roboto";
+      font-size: var(--px18);
+      font-weight: 400;
+      font-style: normal;
+      letter-spacing: normal;
+      text-align: center;
+    }
+
+    .alert-button-group {
+      justify-content: center;
+      .alert-button-role-cancel {
+        color: #03a9f4 !important;
+        background-color: #ffffff !important;
+        position: revert;
+        border: 1px solid #03a9f4 !important;
+        width: 80px;
+        text-align: center;
+        height: 20px;
+        padding-right: 30px;
+        padding-bottom: 17px;
+        border-radius: 15px;
+        padding-top: 15px;
+
+        span {
+          color: var(--colorc2c3c8);
+          font-family: "Roboto";
+          font-size: var(--px13);
+          font-weight: 400;
+          font-style: normal;
+          letter-spacing: normal;
+          line-height: var(--px17);
+          text-align: right;
+          text-transform: uppercase;
+        }
+      }
+      .alert-button.sc-ion-alert-md {
+        background-color: #03a9f4;
+        color: #fefefe;
+        width: 80px;
+        text-align: center;
+        height: 20px;
+        padding-right: 30px;
+        padding-bottom: 17px;
+        border-radius: 15px;
+        padding-top: 15px;
+      }
+      .primary {
+        max-width: var(--px93);
+        min-width: var(--px93);
+        width: var(--px93);
+        height: var(--px35);
+        border-radius: var(--px17);
+        background-color: var(--ion-color-primary);
+        padding-inline-start: var(--px20);
+        padding-inline-end: var(--px21);
+        text-transform: uppercase;
+        .alert-button-inner {
+          justify-content: center;
+        }
+        span {
+          color: var(--colorffffff);
+          font-family: "Roboto";
+          font-size: var(--px15);
+          font-weight: 500;
+          font-style: normal;
+          letter-spacing: normal;
+          line-height: normal;
+          text-align: left;
+          text-transform: uppercase;
+        }
+      }
+    }
+  }
+}
 .ecg-alert {
   .alert-wrapper {
     --max-width: var(--px408);

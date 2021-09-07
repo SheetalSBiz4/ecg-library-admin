@@ -16,6 +16,21 @@ ion-checkbox {
   margin-inline-end: var(--px10);
 }
 
+.welcome-greeting {
+  margin-top: var(--px23);
+  margin-bottom: var(--px23);
+  color: var(--colorfff1f4);
+  font-size: var(--px20);
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: normal;
+  text-align: center;
+  text-transform: uppercase;
+  font-style: normal;
+  letter-spacing: normal;
+  line-height: normal;
+}
+
 .checkbox-container {
   position: relative;
   padding: var(--px9) 0 var(--px20);

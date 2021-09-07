@@ -38,19 +38,32 @@
         <!-- Delete Icon -->
         <ion-icon class="delete-icon" (click)="deleteAllchecked()" *ngIf="showDelete" src="assets/img/delete.svg">
         </ion-icon>
-        <ion-icon class="switch-icon" (click)="openModal()" *ngIf="!showDelete && cases.length > 1 "
-          src="assets/img/Filter.svg"></ion-icon>
-
+        <ion-icon class="switch-icon" (click)="openForm(isFilterOpen)" src="assets/img/Filter.svg"></ion-icon>
+        <!-- <button class="open-button" (click)="openForm()">Open Form</button> -->
+        
+        <div class="form-popup" id="myForm">
+          <form action="/action_page.php" class="form-container">
+            <div class="filter-block">     
+              <a class="filter-label-cls" id='Beginner' (click)="applyFilter('Beginner')" for="Beginner">Beginner</a>
+              <a class="filter-label-cls" id='Intermediate' (click)="applyFilter('Intermediate')" for="Intermediate">Intermediate</a>
+              <a class="filter-label-cls" id='Advance' (click)="applyFilter('Advance')" for="Advance">Advance</a>
+              <a class="filter-label-cls" id='Expert' (click)="applyFilter('Expert')" for="Expert">Expert</a>
+            </div>
+          </form>
+        </div>
+        
+        <!-- *ngIf="!showDelete && cases.length > 1 " -->
       </div>
 
       <!-- Total cases label -->
       <div class="cases-box">
         <p>{{'cases'| translate}} {{activeCount}}</p>
+        <p style="font-size: 12px;margin-left: 10px;">SkillLevel: </p>
+        <p style="font-size: 15px;margin-left: 5px;"> {{ skillLevelValue }}</p>
       </div>
 
       <!-- case list -->
       <div class="cases-container">
-
         <ion-reorder-group (ionItemReorder)="reorderItems($event)" disabled="false">
           <!-- Default reorder icon, end aligned items -->
           <ng-container *ngFor="let item of cases | searchFilter: searchText: currentPage: itemsPerPage ;let i= index;">
@@ -70,14 +83,11 @@
                 </div>
               </div>
               <!-- <ion-reorder class="reorder" mode="ios" slot="end"></ion-reorder> -->
-
               <ion-reorder slot="end">
                 <ion-icon src="assets/img/reorder.svg"></ion-icon>
               </ion-reorder>
             </ion-item>
           </ng-container>
-
-
         </ion-reorder-group>
         <p class="no-data" *ngIf="cases.length == 0 && !loading">{{'noData'| translate}}</p>
       </div>
@@ -198,12 +208,13 @@
         <!-- Skill Level  -->
         <div class="case-description">
           <p class="label-text">{{'skillLevel' | translate}}</p>
-          <select class="single-select-cls" placeholder="Select" id="skillLevel" formControlName="skillLevel" name="skillLevel">
-            <option value="select" selected> select </option>
-            <option value="Beginner"> Beginner </option>
+
+          <select class="single-select-cls" placeholder="Select" id="skillLevel" formControlName="skillLevel" name="skillLevel" (change)="changeSkill(this.creatCaseForm.value.skillLevel)">
+            <option *ngFor="let skill of skillLevelOption" value="{{ skill.value }}"> {{ skill.name }} </option>
+            <!-- <option value="Beginner"> Beginner </option>
             <option value="Intermediate"> Intermediate </option>
             <option value="Advance"> Advance </option>
-            <option value="Expert"> Expert </option>
+            <option value="Expert"> Expert </option> -->
           </select>
 
           <div *ngIf="isSubmit && f.skillLevel.errors" class="error-block">
