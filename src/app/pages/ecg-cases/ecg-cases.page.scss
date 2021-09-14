@@ -3,7 +3,8 @@
   flex-direction: row;
   align-items: flex-start;
   background-color: var(--colorececec);
-  height: calc(100vh);
+  // height: calc(100vh);
+  height: -webkit-fill-available;  // scroll issue fixed
   padding-top: var(--px20);
 }
 .side-menu-visible.container {
@@ -75,6 +76,7 @@
   padding-top: 3px;
   cursor: pointer;
 }
+
 @media only screen and (max-width: 600px) {
   .side-menu-visible.container {
     display: block;
@@ -91,7 +93,7 @@
 }
 
 .cases-container {
-  height: calc(100% - var(--px155));
+  height: calc(100% - 200px);
   overflow-y: auto;
   --background: transparent;
 }
@@ -120,7 +122,8 @@
   ion-fab {
     position: absolute;
     right: var(--px30);
-    bottom: var(--px10);
+    // bottom: 65px;
+    bottom: 15px;  // scroll issue fixed
     .fab-add {
       width: var(--px60);
       height:var(--px60);
@@ -411,6 +414,7 @@
         font-family: "Roboto";
         font-size: var(--px13);
         font-weight: 400;
+        --box-shadow: none !important;
 
         // width: 127px;
         height: var(--px35);
@@ -426,6 +430,7 @@
         // background-image: linear-gradient(to top, #eaeaea 0%, #ffffff 100%);
       }
 
+
       .attach-image {
         cursor: pointer;
         // height: var(--px120);
@@ -435,6 +440,25 @@
         width: -webkit-fill-available;
       }
     }
+  }
+
+  
+  .references-btn {
+    color: var(--color000000);
+    font-family: "Roboto";
+    font-size: var(--px13);
+    font-weight: 400;
+    --box-shadow: none !important;
+    height: var(--px35);
+    --border-radius: var(--px5);
+    --border-style: solid;
+    --border-width: var(--px1);
+    --padding-end: var(--px16);
+    --padding-start: var(--px16);
+    text-transform: none;
+    --border-color: #d2d2d2;
+    --background: linear-gradient(to top, #eaeaea 0%, #ffffff 100%);
+    margin-bottom: 10px;
   }
 
   .answer-heading {
@@ -505,6 +529,21 @@
   }
 }
 
+.input-cls {
+  width: calc(100% - var(--px18));
+  height: 30px;
+  min-height: var(--px98);
+  --border-radius: var(--px5) var(--px5) var(--px7) var(--px7);
+  border: var(--px1) solid var(--colore1e1e1);
+  background-color: var(--colorffffff);
+  --placeholder-color: var(--colord3d3d3);
+  --placeholder-font-weight: 400;
+  font-family: "Roboto";
+  font-size: var(--px12);
+  --color: var(--color000000);
+  padding-left: 10px;
+  }
+
 .textarea {
   width: calc(100% - var(--px18));
   height: var(--px100);
@@ -537,6 +576,7 @@
   align-items: center;
   justify-content: flex-start;
   position: relative;
+  color: #fefefe;
 
   .title {
     margin-left: var(--px33);
@@ -671,6 +711,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
+  margin-top: 40px;
   span{
     color: var(--ion-color-primary);
   }
@@ -751,6 +792,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
   background-color: #f7f2f2 !important;
   font-family: "Open Sans";
   margin: 0px;
+  text-align: center;
   padding: 6px;
   border-radius: 0px !important;
   margin-bottom: 1px;
@@ -761,7 +803,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
   color: #f7f2f2 !important;
   background-color: #74b7b4 !important;
   border-radius: 5px !important;
-  text-align: center;
+  // text-align: center;
   font-size: 17px;
   font-family: "Open Sans";
   margin: 0px;

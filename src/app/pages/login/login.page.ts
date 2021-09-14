@@ -30,7 +30,11 @@ export class LoginPage implements AfterViewInit {
   }
   ionViewWillEnter (){
     this.commonService.enableMenu(false);
-
+    if(localStorage.getItem('termsAndConditions')){
+    this.f.termsAndConditions.setValue(localStorage.getItem('termsAndConditions'));
+    } else {
+      this.f.termsAndConditions.setValue(false);
+    }
   }
 
   /**
@@ -44,8 +48,11 @@ export class LoginPage implements AfterViewInit {
   /**
     * Function to check the value of checkbox
     */
-  public checkBox = () => {
-    this.f.termsAndConditions.setValue(!this.f.termsAndConditions.value);
+  public checkBox = (event) => {
+    if(event.currentTarget.ariaChecked) {
+      localStorage.setItem('termsAndConditions', event.currentTarget.ariaChecked);
+    }
+    this.f.termsAndConditions.setValue(this.f.termsAndConditions.value);
   }
 
 

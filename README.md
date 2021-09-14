@@ -27,3 +27,17 @@ This README would normally document whatever steps are necessary to get your app
 
 * Repo owner or admin
 * Other community or team contact
+
+#### Commands for Creating and deploying builds
+
+# For Deploying to prod - ECG corner Account
+firebase deploy -P prod
+
+# For deploying to a channel named imac
+firebase hosting:channel:deploy imac
+
+# For deploying to the UAT - 
+Ecg library case Account firebase deploy
+
+# for Changing from Uat to prod and vice versa
+firebase use default /prod

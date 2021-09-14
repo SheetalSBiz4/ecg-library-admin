@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 })
 export class EcgCasesPage implements OnInit, OnDestroy {
   @ViewChild('selectFile') selectFile: any;
+  @ViewChild('selectRefrenceFile') selectRefrenceFile: any;
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
 
   private SideMenuVisibleSubsription;
@@ -34,11 +35,10 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   public showDelete = false;
   private changedFromCode = false;
   public maxValue;
-
-
   public cases: any = [];
   private extraCases: any = [];
   public attachment: any = {};
+  public rationaleAttachment: any = {};
   public skillLevel: any;
   private pageLimit = 100;
   public itemsPerPage = 10;
@@ -48,15 +48,23 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   private isaddedbyme = false;
   private isEditOrNew = false;
   public isPublish: boolean = false;
+  public attachmentName: 'Attach ECG Report';
+  public rationaleAttachmentName: "Attach Rationale Report"
+  public ext = "" ;
+  public filename = "";
+  public rationaleFileName = "";
+  public rationaleExt = "";
   public skillLevelOption = [
     {name: 'Beginner', value:'Beginner', selected:true},
     {name: 'Intermediate', value:'Intermediate'},
-    {name: 'Advance', value:'Advance'},
+    {name: 'Advanced', value:'Advanced'},
     {name: 'Expert', value:'Expert'}
   ];
   public isFilterOpen: boolean = false;
   public isBeginner: boolean = true;
   public skillLevelValue = 'Beginner';
+  public attachmentImageUrl: "";
+  public rationaleAttachmentImageUrl = "";
 
   constructor(
     private router: Router,
@@ -81,7 +89,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     d.className = "filter-label-cls-active";
   }
 
-  openForm() {
+  openForm(isFilterOpen) {
     console.log("openForm....");
     if(!this.isFilterOpen) {    
       document.getElementById("myForm").style.display = "block";
@@ -92,13 +100,13 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     }
   }
 
+  // change skill level restriction
   changeSkill (event) {
     var skillLevelSelected = event.target.value;
     console.log("skillLevelValue...", this.skillLevelValue);
     console.log("skillLevelSelected...", skillLevelSelected);
     if(this.skillLevelValue != skillLevelSelected){
-      event.target.value = this.skillLevelValue;  
-      console.log(event.target.value);
+      event.target.value = this.skillLevelValue;
       this.commonService.translateText('selectCurrentSkillLevl').subscribe((msg) => {
         this.commonService.showAlert('Success', msg);
       });
@@ -106,7 +114,8 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   }
 
   applyFilter(value) {
-    var filterArray = ['Beginner', 'Intermediate', 'Advance', 'Expert']
+    this.searchText = "";
+    var filterArray = ['Beginner', 'Intermediate', 'Advanced', 'Expert']
     if(value) {
       this.skillLevelValue = value;
       var d = document.getElementById(value);
@@ -164,6 +173,13 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     const selectedPosition = this.selectedCase ? this.selectedCase.index - 1 : 0;
     const casesLength = this.cases ? this.cases.length : 0
     console.log("this.selectedCase...", this.selectedCase);
+
+    // this.attachmentName = this.selectedCase.attachments[0];
+    // const ext = this.attachmentName.split('.').pop();
+    // const filename = `${this.attachmentName}.${ext}`;
+    // console.log('filename...', filename);
+    // console.log('ext...', ext);
+    
     
     if (selectedPosition == 0 && casesLength > 0) {
       let index = this.itemsPerPage * (this.currentPage - 1);
@@ -206,25 +222,63 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     this.commonService.showLoading();
     this.selectedCase = undefined;
     this.attachment = undefined;
+    this.rationaleAttachment = undefined;
     this.firebaseService.getCases(filterValue, false, this.pageLimit, false).then((res: any) => {
       console.log("res...", res);
+      this.activeCount = res.length;
 
       res.forEach(tempDoc => {
-        tempDoc.attachments.forEach(element => {
-          this.firebaseService.getMediaUrl(element).then((url) => {
-            tempDoc.imageUrl = url;
-          })
-            .catch((err) => {
-              console.error(err);
-            });
-        });
-      });
+        console.log("tempDoc..", tempDoc);
+
+        this.attachmentName = tempDoc.attachments[0];
+        this.ext = this.attachmentName.split('.').pop();
+        this.filename =  `${this.attachmentName.split('.')[0]}`;
+        console.log('filename...', this.filename);
+        console.log('ext...', this.ext);
+
+        this.rationaleAttachmentName = tempDoc.rationaleAttachments[0];
+        this.rationaleExt = this.rationaleAttachmentName.split('.').pop();
+        this.rationaleFileName =  `${this.rationaleAttachmentName.split('.')[0]}`;
+        console.log('filename...', this.rationaleFileName);
+        console.log('ext...', this.rationaleExt);
+
+          if(tempDoc.rationaleAttachments){
+            tempDoc.rationaleAttachments.forEach(RationaleElement => {
+              this.firebaseService.getRationaleMediaUrl(RationaleElement).then((rationaleUrl: any) => {
+                tempDoc.imageRationaleUrl = rationaleUrl;
+              })
+                .catch((err) => {
+                  console.error(err);
+                });
+          });          
+          console.log("tempDoc....111", tempDoc);
+        }
+
+        if(tempDoc.attachments) {
+          tempDoc.attachments.forEach(element => {
+            this.firebaseService.getMediaUrl(element).then((url: any) => {
+              tempDoc.imageUrl = url;
+              // tempDoc.imageUrl = url;
+              
+            })
+              .catch((err) => {
+                console.error(err);
+              });
+          });
+        }    
+        this.selectedCase = tempDoc; 
+        console.log("tempDoc....222", tempDoc);
+        
+     });
+        
       this.cases = res;
       if (this.cases.length > 0) {
+        console.log("this.selectedCase************888888", this.selectedCase);
+        
         this.refreshSelectedCase();
       }
       this.commonService.hideLoading();
-      this.setNewSnapshot();
+      this.setNewSnapshot(filterValue);
       this.loading = false;
     })
       .catch((err) => {
@@ -235,9 +289,9 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   /**
    * setNewSnapshot
    */
-  public setNewSnapshot() {
+  public setNewSnapshot(filterValue) {
 
-    this.firebaseService.setNewSnapshot((doc) => {
+    this.firebaseService.setNewSnapshot(filterValue, (doc) => {
       this.isEditOrNew = true;
       // console.log(2);
       let found = false;
@@ -252,17 +306,25 @@ export class EcgCasesPage implements OnInit, OnDestroy {
         return true;
       });
 
+      console.log("doc...", doc);
+      
       // get the media ur of new doc
       // console.log('doc b4', JSON.stringify(doc));
-      this.firebaseService.getMediaUrl(doc.attachments[0]).then((url) => {
+      this.firebaseService.getMediaUrl( doc.attachments[0]).then((url: any) => {
+        doc.rationaleAttachments[0]
         doc.imageUrl = url;
+        // doc.imageUrl = url;
+        console.log('doc*****************>', doc);
         if (!found) {
           // console.log('doc', doc);
 
           this.cases.push(doc);
+          console.log("Doc..------>111", doc);
+          
           // show msg if added by this user
           if (this.isaddedbyme) {
             this.isaddedbyme = false;
+            this.commonService.hideLoading();
             this.commonService.translateText('caseAdded').subscribe((msg) => {
               this.commonService.showAlert('Success', msg);
             });
@@ -272,6 +334,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
           this.cases.push(doc);
           if (this.isaddedbyme) {
             this.isaddedbyme = false;
+            this.commonService.hideLoading();
             this.commonService.translateText('caseEdited').subscribe((msg) => {
               this.commonService.showAlert('Success', msg);
             });
@@ -280,9 +343,38 @@ export class EcgCasesPage implements OnInit, OnDestroy {
         this.setIsDetails(true);
         this.refreshCases('new');
         this.commonService.hideLoading();
-        // this.getCases();
+        // this.getCases(filterValue);
       })
-      // this.refreshCases();
+
+      this.firebaseService.getRationaleMediaUrl( doc.rationaleAttachments[0]).then((rationaleUrl: any) => {
+        doc.imageUrl = rationaleUrl;
+        console.log('doc******rationale***********>', doc);
+        if (!found) {
+          this.cases.push(doc);
+          console.log("Doc..rationale------>111", doc);
+          // show msg if added by this user
+          if (this.isaddedbyme) {
+            this.isaddedbyme = false;
+            this.commonService.hideLoading();
+            this.commonService.translateText('caseAdded').subscribe((msg) => {
+              this.commonService.showAlert('Success', msg);
+            });
+          }
+        } else {
+          this.cases.push(doc);
+          if (this.isaddedbyme) {
+            this.isaddedbyme = false;
+            this.commonService.hideLoading();
+            this.commonService.translateText('caseEdited').subscribe((msg) => {
+              this.commonService.showAlert('Success', msg);
+            });
+          }
+        }
+        this.setIsDetails(true);
+        this.refreshCases('new');
+        this.commonService.hideLoading();
+      })
+      // this.refreshCases(filterValue);
     })
 
   }
@@ -293,12 +385,15 @@ export class EcgCasesPage implements OnInit, OnDestroy {
       if (res.length > 0) {
         res.forEach(tempDoc => {
           tempDoc.attachments.forEach(element => {
-            this.firebaseService.getMediaUrl(element).then((url) => {
-              tempDoc.imageUrl = url;
+            tempDoc.rationaleAttachments.forEach(RationaleElement => {
+              this.firebaseService.getMediaUrl( element).then((url: any) => {                
+                tempDoc.imageUrl = url;
+                // tempDoc.imageUrl = url;
             })
               .catch((err) => {
                 console.error(err);
               });
+            });
           });
         });
         this.cases = [...this.cases, ...res]
@@ -331,6 +426,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     this.isSubmit = false;
     this.isEdit = false;
     this.attachment = undefined;
+    this.rationaleAttachment = undefined;
     this.setMaxValue(this.activeCount + 1, true);
   }
 
@@ -426,7 +522,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
    *
    * @param ev Function executed after an item has been reordered
    */
-  public reorderItems(ev) {
+  public reorderItems(skillLevelValue, ev) {
     const from = this.absoluteIndex(ev.detail.from);
     const to = this.absoluteIndex(ev.detail.to);
     this.commonService.showLoading();
@@ -434,8 +530,8 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     const itemMove = newCases.splice(from, 1)[0];
     newCases.splice(to, 0, itemMove);
     ev.detail.complete();
-    this.cases = newCases;
-    this.firebaseService.reorderCase(to, from).then(() => {
+    this.cases = newCases;    
+    this.firebaseService.reorderCase(skillLevelValue, to, from).then(() => {
       this.commonService.hideLoading();
     })
       .catch((err) => {
@@ -465,16 +561,23 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   /**
    * editCaseSubmit
    */
-  public editCaseSubmit(uploadUrl, dimensions) {
+  public editCaseSubmit(isUploadUrl, uploadUrl, dimensions) {
     const payload = this.creatCaseForm.value;
     console.log("payload...", payload);
     
-    payload['uploadUrl'] = uploadUrl;
+    if(isUploadUrl) {
+      payload['uploadUrl'] = uploadUrl;
+    } else {
+      payload['rationaleUploadUrl'] = uploadUrl;
+    }
     payload['dimensions'] = dimensions;
     payload['firebaseId'] = this.selectedCase.firebaseId;
     payload['oldCaseNumber'] = this.selectedCase.index;
     this.isaddedbyme = true;
     this.firebaseService.editCase(payload).then((response) => {
+      this.getCases(payload.skillLevel);
+      this.setSnapshot(payload.skillLevel);
+      this.applyFilter(payload.skillLevel);
     })
       .catch((err) => {
         console.error(err);
@@ -504,10 +607,28 @@ export class EcgCasesPage implements OnInit, OnDestroy {
       if (this.creatCaseForm.valid && this.attachment) {
         this.commonService.showLoading();
         if (this.attachment.fromFirebase) {
-          this.editCaseSubmit(this.attachment['file'], this.attachment.dimensions);
+          this.editCaseSubmit( true, this.attachment['file'], this.attachment.dimensions);
         } else {
-          this.firebaseService.uploadImage(this.attachment['file'], this.selectedCase.attachments[0]).then((uploadUrl) => {
-            this.editCaseSubmit(uploadUrl, this.attachment.dimensions);
+          this.firebaseService.uploadImage(this.attachment['file'], this.rationaleAttachment['file'], this.selectedCase.attachments[0]).then((uploadUrl) => {
+            this.editCaseSubmit(true, uploadUrl, this.attachment.dimensions);
+          })
+            .catch((err) => {
+              console.error(err);
+            })
+        }
+      } else {
+        this.submitBtnDisabled = false;
+      }
+
+      if (this.creatCaseForm.valid && this.rationaleAttachment) {
+        this.commonService.showLoading();
+        if (this.rationaleAttachment.fromFirebase) {
+          this.editCaseSubmit(false, this.rationaleAttachment['file'], this.rationaleAttachment.dimensions);
+        } else {
+          this.firebaseService.uploadRationaleImage(
+            this.rationaleAttachment['file'], 
+            this.selectedCase.rationaleAttachments[0]).then((uploadUrl) => {
+            this.editCaseSubmit(false, this.rationaleAttachment['file'], this.rationaleAttachment.dimensions);
           })
             .catch((err) => {
               console.error(err);
@@ -520,32 +641,71 @@ export class EcgCasesPage implements OnInit, OnDestroy {
 
     } else {
       this.isSubmit = true;
-      this.submitBtnDisabled = true;
+      // this.submitBtnDisabled = true;
       if(this.f.isPublish.value) {
         this.creatCaseForm.value.isPublish = true;
       } else {
         this.creatCaseForm.value.isPublish = false;
       }
       this.commonService.trimForm(this.creatCaseForm);
-      if (this.creatCaseForm.valid && this.attachment) {
+      var payload = this.creatCaseForm.value;
+      if(this.creatCaseForm.valid && this.attachment && this.rationaleAttachment){
+        console.log("this.rationaleAttachment...", this.rationaleAttachment['file']);
+        
         this.commonService.showLoading();
-        this.firebaseService.uploadImage(this.attachment['file'], false).then((uploadUrl) => {
-          const payload = this.creatCaseForm.value;
-          payload['uploadUrl'] = uploadUrl;
-          payload['dimensions'] = this.attachment.dimensions;
-          this.isaddedbyme = true;
-          this.firebaseService.createCase(payload).then((response) => {
-          })
-            .catch((err) => {
-              console.error(err);
+            this.firebaseService.uploadImage(this.attachment['file'], this.rationaleAttachment['file'], false).then((uploadUrl:any) => {
+              console.log("uploadUrl...", uploadUrl);
+              var data = uploadUrl;
+                        
+              payload['uploadUrl'] = uploadUrl.filename;
+              payload['uploadRationaleUrl'] = uploadUrl.rationaleFileName;
+              payload['dimensions'] = this.attachment.dimensions;
+              payload['dimensionsRationale'] = this.rationaleAttachment.dimensions;
+              console.log("attachment ... payload..", payload);
+              console.log("payload...", payload);
+              this.firebaseService.createCase(payload).then((response) => {            
+                this.getCases(payload.skillLevel);
+                this.setSnapshot(payload.skillLevel);
+                this.applyFilter(payload.skillLevel);
+                this.setIsDetails(true);
+              })
+                .catch((err) => {
+                  console.error("rationaleAttachment...err..",err);
+                })
+                .catch((err) => {
+                  console.error(err);
+                })              
+              this.isaddedbyme = true;
             })
-        })
-          .catch((err) => {
-            console.error(err);
-          })
-      } else {
+          // if (this.rationaleAttachment) {
+          //   this.commonService.showLoading();
+          //   this.firebaseService.uploadRationaleImage(this.rationaleAttachment['file'], false).then((uploadUrl) => {
+              
+          //     console.log("rationaleAttachment ... payload..", payload);
+          //     console.log("payload...", payload);
+          //     this.firebaseService.createCase(payload).then((response) => {       
+                           
+          //       this.getCases(payload.skillLevel);
+          //       this.setSnapshot(payload.skillLevel);
+          //       this.applyFilter(payload.skillLevel);
+          //       this.setIsDetails(true);
+          //     })
+          //       .catch((err) => {
+          //         console.error("rationaleAttachment...err..",err);
+          //       })
+          //     this.isaddedbyme = true;
+          //   })
+          //     .catch((err) => {
+          //       console.error("rationaleAttachment...err", err);
+          //     })
+          // }
+          
+      
+    } else {
         this.submitBtnDisabled = false;
       }
+     
+      
     }
   }
 
@@ -553,7 +713,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
    * attachImage
    */
   public attachImage() {
-    if (this.isEdit || this.attachment) {
+    if (this.isEdit || this.attachment ) {
       this.commonService.showConfirmation(
         "Confirm",
         "ECG report is already attached, do you want to replace it?",
@@ -569,9 +729,72 @@ export class EcgCasesPage implements OnInit, OnDestroy {
 
   }
 
+  /**
+   * attach References Image
+   */
+   public attachReferencesImage() {
+    if (this.isEdit || this.rationaleAttachment ) {
+      this.commonService.showConfirmation(
+        "Confirm",
+        "ECG report is already attached, do you want to replace it?",
+        () => {
+          this.selectRefrenceFile.nativeElement.click();
+
+        }, () => {
+
+        }, "Yes");
+    } else {
+      this.selectRefrenceFile.nativeElement.click();
+    }
+
+  }
+
   private isFileImage(file) {
     return file && file['type'].split('/')[0] === 'image';
   }
+
+  public handleSelectRefrenceFile = (e) => {
+    e.preventDefault();
+    var file = e.target.files[0];
+    var tempMediaType = "image";
+    tempMediaType = file != null ? file.type.split("/")[0] : tempMediaType;
+    var tempSize = 0;
+    tempSize = file.size / 1024 / 1024;
+    const isImage = this.isFileImage(file);
+
+    if (!isImage) {
+      this.commonService.showAlert('Error', "Invalid file type, Please select image file.");
+      this.selectRefrenceFile.nativeElement.value = "";
+      return;
+    } else if (tempSize > 5) {
+      this.commonService.showAlert('Error', "Please select file below 5 Mb.");
+      this.selectRefrenceFile.nativeElement.value = "";
+      return;
+    }
+
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = (e) => {
+      // Calculating image size - height and width for use in mobile app
+      //Initiate the JavaScript Image object.
+      var image = new Image();
+      //Set the Base64 string return from FileReader as source.
+      image.src = e.target.result as string;
+      image.onload = () => {
+        this.rationaleAttachment = {
+          file: file,
+          imagePreviewUrl: reader.result,
+          mediaType: tempMediaType,
+          imgSize: tempSize,
+          dimensions: {
+            height: image.height,
+            width: image.width,
+          }
+        };
+      };
+    };
+    this.selectRefrenceFile.nativeElement.value = "";
+  };
 
   /**
    * name
@@ -689,9 +912,22 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   public editCase() {
     this.setIsDetails(false);
     this.isEdit = true;
-    console.log("this.selectedCase...editcase...",this.selectedCase);
+
+    console.log("this.selectedCase.rationaleAttachments[0]...", this.selectedCase.rationaleAttachments[0]);
+    
+    this.firebaseService.getRationaleMediaUrl(this.selectedCase.rationaleAttachments[0]).then((imageRationaleUrl) => {      
+      this.selectedCase.rationaleImageUrl = imageRationaleUrl;
+      console.log("imageRationaleUrl....", this.selectedCase.rationaleImageUrl);
+      
+    })
+      .catch((err) => {
+        console.error(err);
+      });
+
+    console.log("this.selectedCase...editcase...", this.selectedCase);
 
     this.creatCaseForm.setValue({
+      caseCode: this.selectedCase.caseCode,
       skillLevel: this.selectedCase.skillLevel,
       supplement: this.selectedCase.supplement,
       isPublish: this.selectedCase.isPublish,
@@ -710,11 +946,22 @@ export class EcgCasesPage implements OnInit, OnDestroy {
       imgSize: '',
       dimensions: this.selectedCase.dimensions
     };
+    this.rationaleAttachment = {
+      fromFirebase: true,
+      file: this.selectedCase.rationaleAttachments[0],
+      imagePreviewUrl: this.selectedCase.rationaleImageUrl,
+      mediaType: '',
+      imgSize: '',
+      dimensions: this.selectedCase.dimensions
+    };
+
+    console.log("this.rationale attachment...", this.rationaleAttachment.imagePreviewUrl);
+    
     this.setMaxValue(this.activeCount, false);
   }
 
   public checkReorder() {
-    if (this.searchText && this.searchText.length) {
+    if (this.searchText && this.searchText.length) {            
       this.reorderGroup.disabled = true;
     } else {
       this.reorderGroup.disabled = false;
@@ -764,9 +1011,19 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     return await optionModal.present();
   }
 
-  async openViewer(selectedCase) {
+  async openViewer(selectedCase, isECGAttachment) { 
+    if(isECGAttachment == 'isAttachment'){
+      this.firebaseService.getMediaUrl(selectedCase.attachments[0]).then((imageUrl: any) => {
+        this.attachmentImageUrl = imageUrl;
+        console.log("imageUrl....111", this.attachmentImageUrl);
+      })
+        .catch((err) => {
+          console.error(err);
+        });
+        console.log("select..", this.selectedCase.imageUrl);
+
     const modal = await this.modalController.create({
-      component: ViewerModalComponent,
+      component: ViewerModalComponent,     
       componentProps: {
         src: selectedCase.imageUrl ? selectedCase.imageUrl : selectedCase.imagePreviewUrl,
         slideOptions:{
@@ -791,8 +1048,52 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     mod.style.setProperty('--height', selectedCase.dimensions.height+'px');
     mod.style.setProperty('--width', selectedCase.dimensions.width+'px');
     mod.style.setProperty('display', 'flex');
-
     return ;
-  }
+  } else if(isECGAttachment == 'isRationaleAttachment'){
+    
+    var selectedData :any;
+    if(selectedCase.rationaleAttachments[0]) {
+    this.firebaseService.getRationaleMediaUrl(selectedData = selectedCase.rationaleAttachments[0]).then((imageRationaleUrl: any) => {
+      this.rationaleAttachmentImageUrl = imageRationaleUrl;
+      console.log("rationaleAttachmentImageUrl....111", this.rationaleAttachmentImageUrl);
+    })
+      .catch((err) => {
+        console.error(err);
+      });
+    } else {
+      this.rationaleAttachmentImageUrl = selectedCase.imagePreviewUrl;
+    }
+      console.log("select..", this.selectedCase);
+      console.log("rationaleAttachmentImageUrl....111", this.rationaleAttachmentImageUrl);
+      
+  const modal = await this.modalController.create({
+    component: ViewerModalComponent,     
+    componentProps: {
+      src: this.rationaleAttachmentImageUrl ? this.rationaleAttachmentImageUrl : selectedCase.imagePreviewUrl,
+      slideOptions:{
+        centeredSlides: true,
+        passiveListeners: false,
+        zoom: { enabled: false },
+        allowSlideNext:false,
+        allowSlidePrev:false,
+        autoHeight:true,
+        setWrapperSize:true,
+        height:this.selectedCase.dimensionsRationale ? this.selectedCase.dimensionsRationale.height : null,
+        width:this.selectedCase.dimensionsRationale ? this.selectedCase.dimensionsRationale.width: null,
+       }
+    },
+    cssClass: ['ion-img-viewer', 'custom-modal-image-viewer'] ,
+    keyboardClose: true,
+    showBackdrop: true,
+  });
+  await modal.present();
+  var x = document.getElementsByClassName("custom-modal-image-viewer") ;
+  let mod = x[0] as HTMLBaseElement;
+  mod.style.setProperty('--height', selectedCase.dimensionsRationale.height+'px');
+  mod.style.setProperty('--width', selectedCase.dimensionsRationale.width+'px');
+  mod.style.setProperty('display', 'flex');
+  return ;
+}
+}
 
 }

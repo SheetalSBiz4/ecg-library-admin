@@ -1,6 +1,8 @@
 {
   "projects": {
     "default": "ecgclinicalcases-69309",
-    "prod": "ecg-corner"
-  }
+    "prod": "ecg-corner",
+    "library": "ecg-library"
+  },
+  "targets": {}
 }

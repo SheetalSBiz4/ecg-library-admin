@@ -210,6 +210,7 @@ export class FirebaseService {
   public createCase(data) {
     return new Promise((resolve, reject) => {
       let message = {
+        caseCode: data.caseCode,
         skillLevel: data.skillLevel,
         supplement: data.supplement,
         isPublish: data.isPublish,
@@ -221,6 +222,8 @@ export class FirebaseService {
         updated_time: firebase.firestore.FieldValue.serverTimestamp(),
         attachments: [data.uploadUrl],
         dimensions: data.dimensions,
+        rationaleAttachments: [data.uploadRationaleUrl],
+        dimensionsRationale: data.dimensionsRationale
       };
       firestore
         .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${message.skillLevel}/Cases`)
@@ -247,6 +250,7 @@ export class FirebaseService {
     // console.log('edit', data);
     return new Promise((resolve, reject) => {
       let Case = {
+        caseCode: data.caseCode,
         skillLevel: data.skillLevel,
         supplement: data.supplement,
         isPublish: data.isPublish,
@@ -256,6 +260,7 @@ export class FirebaseService {
         references:data.references,
         updated_time: firebase.firestore.FieldValue.serverTimestamp(),
         attachments: [data.uploadUrl],
+        rationaleAttachments: [data.rationaleUploadUrl],
         dimensions: data.dimensions,
       };
       firestore
@@ -267,7 +272,7 @@ export class FirebaseService {
           if (data.caseNumber == data.oldCaseNumber) {
             resolve(false);
           } else {
-            this.reorderCase(data.caseNumber - 1, data.oldCaseNumber - 1).then(() => {
+            this.reorderCase(Case.skillLevel, data.caseNumber - 1, data.oldCaseNumber - 1).then(() => {
               resolve(true);
             }).catch((err) => {
               reject(err);
@@ -285,7 +290,7 @@ export class FirebaseService {
   /**
    * reorderCase - function to reorder the case in firebase
    */
-  public reorderCase(to, from) {
+  public reorderCase(skillLevel, to, from) {
     return new Promise((resolve, reject) => {
       this.sequence.splice(to, 0, ...this.sequence.splice(from, 1))
 
@@ -294,7 +299,7 @@ export class FirebaseService {
         updated_time: firebase.firestore.FieldValue.serverTimestamp(),
       };
       firestore
-        .doc(`env/${AppSetting.ENVIRONMENT_NAME}/Level/Beginner/Stats/totalStats`)
+        .doc(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${skillLevel}/Stats/totalStats`)
         .set(updateDoc, { merge: true })
         .then((res) => {
           resolve('Success');
@@ -508,10 +513,10 @@ export class FirebaseService {
       );
   }
 
-  public setNewSnapshot(callback) {
+  public setNewSnapshot(filterValue, callback) {
     this.removeNewSnapshot();
     newSnapShot = firestore
-      .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Level/Beginner/Cases`)
+      .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${filterValue}/Cases`)
       .orderBy("updated_time", "desc")
       .limit(1)
       .onSnapshot(
@@ -565,14 +570,31 @@ export class FirebaseService {
   }
 
   /**
-   * uploadImage
+   * getRationaleMediaUrl
    */
-  public uploadImage(file, oldImg) {
-    // console.log('prrr')
+   public getRationaleMediaUrl(path) {
+    return new Promise((resolve, reject) => {
+      storage.ref(`env/${AppSetting.ENVIRONMENT_NAME}/rationaleAttachment/${path}`).getDownloadURL()
+      .then(url => {
+          resolve(url);
+        })
+        .catch(error => {
+          // console.log("getDownloadURL ==>", error);
+          reject(error);
+        });
+    });
+  }
+
+  /**
+   * uploadRationaleImage
+   */
+   public uploadRationaleImage(file, oldImg) {
+    console.log('uploadRationaleImage..file..', file, "oldImg...", oldImg);
+
     const tmpFileName = new Date().getTime();
     const ext = file.name.split('.').pop();
     const filename = `${file.name ? file.name.split('.')[0] + '_' + tmpFileName : tmpFileName}.${ext}`;
-    var uploadString = `env/${AppSetting.ENVIRONMENT_NAME}/attachment/${filename}`;
+    var uploadString = `env/${AppSetting.ENVIRONMENT_NAME}/rationaleAttachment/${filename}`;
     var response = { state: '', data: '' }
     return new Promise((resolve, reject) => {
       storage
@@ -580,7 +602,7 @@ export class FirebaseService {
         .put(file)
         .then(result => {
           if (oldImg) {
-            this.deleteImage(oldImg)
+            this.deleterationaleImage(oldImg)
           }
           resolve(filename);
         }).catch(error => {
@@ -589,8 +611,66 @@ export class FirebaseService {
     })
   }
 
+  public deleterationaleImage(path) {
+    console.log("deleterationaleImage....path-----------------", path);
+    return new Promise((resolve, reject) => {
+      storage.ref(`env/${AppSetting.ENVIRONMENT_NAME}/rationaleAttachment/${path}`).delete()
+        .then(url => {
+          resolve('success')
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
+
+  /**
+   * uploadImage
+   */
+  public uploadImage(file, rationaleFile, oldImg) {
+    console.log('uploadImage..file..', file, "rationaleFile..", rationaleFile, "oldImg...", oldImg);
+
+      var response = { filename: '', rationaleFileName: '' }
+      const tmpFileName = new Date().getTime();
+      const ext = file.name.split('.').pop();
+      var filename = `${file.name ? file.name.split('.')[0] + '_' + tmpFileName : tmpFileName}.${ext}`;
+      var uploadString = `env/${AppSetting.ENVIRONMENT_NAME}/attachment/${filename}`;
+      response.filename = filename;
+      return new Promise((resolve, reject) => {
+        storage
+          .ref(uploadString)
+          .put(file)
+          .then(result => {
+            result.uploadAttachment = result;
+            if (oldImg) {
+              this.deleteImage(oldImg)
+            }
+            const tmpRationaleFileName = new Date().getTime();
+            const ext = rationaleFile.name.split('.').pop();
+            var rationaleFileName = `${rationaleFile.name ? rationaleFile.name.split('.')[0] + '_' + tmpRationaleFileName : tmpRationaleFileName}.${ext}`;
+            var uploadRationaleString = `env/${AppSetting.ENVIRONMENT_NAME}/rationaleAttachment/${rationaleFileName}`;
+            response.rationaleFileName = rationaleFileName;           
+              storage
+                .ref(uploadRationaleString)
+                .put(rationaleFile)
+                .then(result => {
+                  if (oldImg) {
+                    this.deleterationaleImage(oldImg)
+                  }
+                  
+                  resolve(response);
+                }).catch(error => {
+                  reject(error);
+            })
+            
+          }).catch(error => {
+            reject(error);
+          })
+      })
+  }
+
   public deleteImage(path) {
-    // console.log("path-----------------", path);
+    console.log("deleteImage....path-----------------", path);
     return new Promise((resolve, reject) => {
       storage.ref(`env/${AppSetting.ENVIRONMENT_NAME}/attachment/${path}`).delete()
         .then(url => {

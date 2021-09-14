@@ -140,6 +140,13 @@ export class ValidatorService {
     */
    public createCaseFormValidator = () => {
     return this.formBuilder.group({
+      caseCode: [
+        '',
+        Validators.compose([
+          Validators.required,
+          // Validators.maxLength(250)
+        ]),
+      ],
       caseNumber: [
         '',
         Validators.compose([
