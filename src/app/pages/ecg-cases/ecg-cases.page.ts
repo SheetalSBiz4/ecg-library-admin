@@ -776,11 +776,12 @@ export class EcgCasesPage implements OnInit, OnDestroy {
         "ECG report is already attached, do you want to replace it?",
         () => {
           this.selectRefrenceFile.nativeElement.click();
-
+          this.isAnswerImage = true;
         }, () => {
 
         }, "Yes");
     } else {
+      this.isAnswerImage = true;
       this.selectRefrenceFile.nativeElement.click();
     }
 

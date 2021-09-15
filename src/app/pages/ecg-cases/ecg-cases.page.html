@@ -321,7 +321,7 @@
             <p class="desc-heading">{{'answerImage' | translate}}</p>
           <!-- Attachment buttons -->
           <div class="btn-container" [ngClass]="{'align-right':rationaleAttachment}">
-            <ion-img *ngIf="isAnswerImage" class="attach-image" (click)="openViewer(rationaleAttachment, 'isRationaleAttachment')"
+            <ion-img *ngIf="rationaleAttachment && isAnswerImage" class="attach-image" (click)="openViewer(rationaleAttachment, 'isRationaleAttachment')"
               [src]="rationaleAttachment?.imagePreviewUrl ? rationaleAttachment?.imagePreviewUrl : selectedCase.rationaleImageUrl" alt="rationaleAttachment">
             </ion-img>
             <ion-button id="attachRefrenceReport" (click)="attachReferencesImage()" class="attch-btn">{{'attachImage' | translate}}
