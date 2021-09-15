@@ -165,11 +165,11 @@
 
 
       <!-- Answer image -->
-      <div *ngIf="rationaleFileName" class="case-description dotted-border">
+      <div *ngIf="isAnswerImage" class="case-description dotted-border">
         <p class="desc-heading">{{'answerImage' | translate}}</p>
         <!-- Attachment buttons -->
         <div class="btn-container">
-          <ion-button class="attch-btn references-btn" *ngIf="rationaleFileName" (click)="openViewer(selectedCase, 'isRationaleAttachment')" >
+          <ion-button class="attch-btn references-btn" (click)="openViewer(selectedCase, 'isRationaleAttachment')" >
             <!-- {{rationaleFileName? rationaleFileName : 'Attach ECG Report'}}.{{rationaleExt ? rationaleExt : ''}} -->
             Click to view
           </ion-button>
@@ -315,13 +315,13 @@
           </div>
         </div>
 
-        <div *ngIf="rationaleAttachment" class="attachment">
+        <div class="attachment">
           <input id="selectRefrenceFile" #selectRefrenceFile style=" display: 'none' " type="file" (change)="handleSelectRefrenceFile($event)"
             accept="image/*" />
             <p class="desc-heading">{{'answerImage' | translate}}</p>
           <!-- Attachment buttons -->
           <div class="btn-container" [ngClass]="{'align-right':rationaleAttachment}">
-            <ion-img *ngIf="rationaleAttachment" class="attach-image" (click)="openViewer(rationaleAttachment, 'isRationaleAttachment')"
+            <ion-img *ngIf="isAnswerImage" class="attach-image" (click)="openViewer(rationaleAttachment, 'isRationaleAttachment')"
               [src]="rationaleAttachment?.imagePreviewUrl ? rationaleAttachment?.imagePreviewUrl : selectedCase.rationaleImageUrl" alt="rationaleAttachment">
             </ion-img>
             <ion-button id="attachRefrenceReport" (click)="attachReferencesImage()" class="attch-btn">{{'attachImage' | translate}}

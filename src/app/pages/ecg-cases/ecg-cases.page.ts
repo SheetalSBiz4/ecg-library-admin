@@ -65,6 +65,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   public skillLevelValue = 'Beginner';
   public attachmentImageUrl: "";
   public rationaleAttachmentImageUrl = "";
+  public isAnswerImage = false;
 
   constructor(
     private router: Router,
@@ -165,7 +166,13 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     item['index'] = i + 1;
     this.selectedCase = item;
     this.setIsDetails(true);
-    console.log("this.selectedCase ...", this.selectedCase);
+    console.log("this.selectedCase ...choose", this.selectedCase);
+
+    if(this.selectedCase.rationaleAttachments[0] != "") {
+      this.isAnswerImage = true;
+    } else {
+      this.isAnswerImage = false;
+    }
     
   }
 
@@ -763,7 +770,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
    * attach References Image
    */
    public attachReferencesImage() {
-    if (this.isEdit || this.rationaleAttachment ) {
+    if (this.isEdit && this.isAnswerImage == true) {
       this.commonService.showConfirmation(
         "Confirm",
         "ECG report is already attached, do you want to replace it?",
