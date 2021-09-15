@@ -646,6 +646,7 @@ export class FirebaseService {
               this.deleteImage(oldImg)
             }
             const tmpRationaleFileName = new Date().getTime();
+            if(rationaleFile != ""){
             const ext = rationaleFile.name.split('.').pop();
             var rationaleFileName = `${rationaleFile.name ? rationaleFile.name.split('.')[0] + '_' + tmpRationaleFileName : tmpRationaleFileName}.${ext}`;
             var uploadRationaleString = `env/${AppSetting.ENVIRONMENT_NAME}/rationaleAttachment/${rationaleFileName}`;
@@ -662,6 +663,10 @@ export class FirebaseService {
                 }).catch(error => {
                   reject(error);
             })
+          } else {
+            response.rationaleFileName = "";
+            resolve(response);
+          }
             
           }).catch(error => {
             reject(error);

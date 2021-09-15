@@ -165,6 +165,8 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     item['index'] = i + 1;
     this.selectedCase = item;
     this.setIsDetails(true);
+    console.log("this.selectedCase ...", this.selectedCase);
+    
   }
 
   public refreshSelectedCase() {
@@ -311,7 +313,6 @@ export class EcgCasesPage implements OnInit, OnDestroy {
       // get the media ur of new doc
       // console.log('doc b4', JSON.stringify(doc));
       this.firebaseService.getMediaUrl( doc.attachments[0]).then((url: any) => {
-        doc.rationaleAttachments[0]
         doc.imageUrl = url;
         // doc.imageUrl = url;
         console.log('doc*****************>', doc);
@@ -335,6 +336,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
           if (this.isaddedbyme) {
             this.isaddedbyme = false;
             this.commonService.hideLoading();
+            this.loading = false;
             this.commonService.translateText('caseEdited').subscribe((msg) => {
               this.commonService.showAlert('Success', msg);
             });
@@ -620,7 +622,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
         this.submitBtnDisabled = false;
       }
 
-      if (this.creatCaseForm.valid && this.rationaleAttachment) {
+      if (this.rationaleAttachment) {
         this.commonService.showLoading();
         if (this.rationaleAttachment.fromFirebase) {
           this.editCaseSubmit(false, this.rationaleAttachment['file'], this.rationaleAttachment.dimensions);
@@ -634,11 +636,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
               console.error(err);
             })
         }
-      } else {
-        this.submitBtnDisabled = false;
       }
-
-
     } else {
       this.isSubmit = true;
       // this.submitBtnDisabled = true;
@@ -649,18 +647,24 @@ export class EcgCasesPage implements OnInit, OnDestroy {
       }
       this.commonService.trimForm(this.creatCaseForm);
       var payload = this.creatCaseForm.value;
-      if(this.creatCaseForm.valid && this.attachment && this.rationaleAttachment){
-        console.log("this.rationaleAttachment...", this.rationaleAttachment['file']);
+      if(this.creatCaseForm.valid && this.attachment){
         
+        if(this.rationaleAttachment == null || this.rationaleAttachment == "" || this.rationaleAttachment == undefined) {
+          
         this.commonService.showLoading();
-            this.firebaseService.uploadImage(this.attachment['file'], this.rationaleAttachment['file'], false).then((uploadUrl:any) => {
+            this.firebaseService.uploadImage(this.attachment['file'], "", false).then((uploadUrl:any) => {
               console.log("uploadUrl...", uploadUrl);
               var data = uploadUrl;
                         
               payload['uploadUrl'] = uploadUrl.filename;
-              payload['uploadRationaleUrl'] = uploadUrl.rationaleFileName;
               payload['dimensions'] = this.attachment.dimensions;
-              payload['dimensionsRationale'] = this.rationaleAttachment.dimensions;
+              payload['uploadRationaleUrl'] = uploadUrl.rationaleFileName;
+              if(uploadUrl.rationaleFileName) {
+                payload['dimensionsRationale'] = this.rationaleAttachment.dimensions;
+              } else {
+                // this.rationaleAttachment.dimensions = {height: 0, width: 0};
+                payload['dimensionsRationale'] = "";
+              }
               console.log("attachment ... payload..", payload);
               console.log("payload...", payload);
               this.firebaseService.createCase(payload).then((response) => {            
@@ -677,6 +681,32 @@ export class EcgCasesPage implements OnInit, OnDestroy {
                 })              
               this.isaddedbyme = true;
             })
+        } else {
+          this.firebaseService.uploadImage(this.attachment['file'], this.rationaleAttachment['file'], false).then((uploadUrl:any) => {
+            console.log("uploadUrl...", uploadUrl);
+            var data = uploadUrl;
+                      
+            payload['uploadUrl'] = uploadUrl.filename;
+            payload['uploadRationaleUrl'] = uploadUrl.rationaleFileName;
+            payload['dimensions'] = this.attachment.dimensions;
+            payload['dimensionsRationale'] = this.rationaleAttachment.dimensions;
+            console.log("attachment ... payload..", payload);
+            console.log("payload...", payload);
+            this.firebaseService.createCase(payload).then((response) => {            
+              this.getCases(payload.skillLevel);
+              this.setSnapshot(payload.skillLevel);
+              this.applyFilter(payload.skillLevel);
+              this.setIsDetails(true);
+            })
+              .catch((err) => {
+                console.error("rationaleAttachment...err..",err);
+              })
+              .catch((err) => {
+                console.error(err);
+              })              
+            this.isaddedbyme = true;
+          })
+        }
           // if (this.rationaleAttachment) {
           //   this.commonService.showLoading();
           //   this.firebaseService.uploadRationaleImage(this.rationaleAttachment['file'], false).then((uploadUrl) => {
@@ -955,7 +985,9 @@ export class EcgCasesPage implements OnInit, OnDestroy {
       dimensions: this.selectedCase.dimensions
     };
 
-    console.log("this.rationale attachment...", this.rationaleAttachment.imagePreviewUrl);
+    this.rationaleAttachment.imagePreviewUrl = this.selectedCase.rationaleImageUrl;
+
+    console.log("this.rationaleAttachment.imagePreviewUrl...", this.rationaleAttachment.imagePreviewUrl);
     
     this.setMaxValue(this.activeCount, false);
   }
@@ -1013,14 +1045,18 @@ export class EcgCasesPage implements OnInit, OnDestroy {
 
   async openViewer(selectedCase, isECGAttachment) { 
     if(isECGAttachment == 'isAttachment'){
-      this.firebaseService.getMediaUrl(selectedCase.attachments[0]).then((imageUrl: any) => {
-        this.attachmentImageUrl = imageUrl;
-        console.log("imageUrl....111", this.attachmentImageUrl);
-      })
-        .catch((err) => {
-          console.error(err);
-        });
-        console.log("select..", this.selectedCase.imageUrl);
+      if(selectedCase.imagePreviewUrl){
+        this.attachmentImageUrl = selectedCase.imagePreviewUrl;
+      } else {
+        this.firebaseService.getMediaUrl(selectedCase.attachments[0]).then((imageUrl: any) => {
+          this.attachmentImageUrl = imageUrl;
+          console.log("imageUrl....111", this.attachmentImageUrl);
+        })
+          .catch((err) => {
+            console.error(err);
+          });        
+      }
+      console.log("select..", this.selectedCase.imageUrl);
 
     const modal = await this.modalController.create({
       component: ViewerModalComponent,     
@@ -1052,19 +1088,19 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   } else if(isECGAttachment == 'isRationaleAttachment'){
     
     var selectedData :any;
-    if(selectedCase.rationaleAttachments[0]) {
-    this.firebaseService.getRationaleMediaUrl(selectedData = selectedCase.rationaleAttachments[0]).then((imageRationaleUrl: any) => {
-      this.rationaleAttachmentImageUrl = imageRationaleUrl;
-      console.log("rationaleAttachmentImageUrl....111", this.rationaleAttachmentImageUrl);
-    })
-      .catch((err) => {
-        console.error(err);
-      });
-    } else {
+    if(selectedCase.imagePreviewUrl) {
       this.rationaleAttachmentImageUrl = selectedCase.imagePreviewUrl;
+    } else {
+      this.firebaseService.getRationaleMediaUrl(selectedData = selectedCase.rationaleAttachments[0]).then((imageRationaleUrl: any) => {
+        this.rationaleAttachmentImageUrl = imageRationaleUrl;
+        console.log("rationaleAttachmentImageUrl....111", this.rationaleAttachmentImageUrl);
+      })
+        .catch((err) => {
+          console.error(err);
+        });      
     }
-      console.log("select..", this.selectedCase);
-      console.log("rationaleAttachmentImageUrl....111", this.rationaleAttachmentImageUrl);
+    console.log("select..", this.selectedCase);
+    console.log("rationaleAttachmentImageUrl....111", this.rationaleAttachmentImageUrl);
       
   const modal = await this.modalController.create({
     component: ViewerModalComponent,     
