@@ -483,7 +483,7 @@
   align-items: center;
   justify-content: center;
   padding-top: var(--px20);
-  // padding-bottom: 20px;
+  padding-bottom: var(--px20);
 
   .delete-btn {
     width: var(--px102);
@@ -848,6 +848,12 @@ body {font-family: Arial, Helvetica, sans-serif;}
 /* Add some hover effects to buttons */
 .form-container .btn:hover, .open-button:hover {
   opacity: 1;
+}
+
+.link-cls {
+  color: #210de4 !important;
+  cursor: pointer;
+  // text-decoration: underline;
 }
 
 

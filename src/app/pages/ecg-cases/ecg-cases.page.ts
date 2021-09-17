@@ -36,6 +36,8 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   private changedFromCode = false;
   public maxValue;
   public cases: any = [];
+  public filterCases: any = [];
+  public filterActiveCases: any ;
   private extraCases: any = [];
   public attachment: any = {};
   public rationaleAttachment: any = {};
@@ -48,7 +50,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   private isaddedbyme = false;
   private isEditOrNew = false;
   public isPublish: boolean = false;
-  public attachmentName: 'Attach ECG Report';
+  public attachmentName: any;
   public rationaleAttachmentName: "Attach Rationale Report"
   public ext = "" ;
   public filename = "";
@@ -116,6 +118,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
 
   applyFilter(value) {
     this.searchText = "";
+    this.filterActiveCases = false;
     var filterArray = ['Beginner', 'Intermediate', 'Advanced', 'Expert']
     if(value) {
       this.skillLevelValue = value;
@@ -170,6 +173,13 @@ export class EcgCasesPage implements OnInit, OnDestroy {
 
     if(this.selectedCase.rationaleAttachments[0] != "") {
       this.isAnswerImage = true;
+      this.firebaseService.getRationaleMediaUrl(this.selectedCase.rationaleAttachments[0]).then((imageRationaleUrl: any) => {
+        this.rationaleAttachmentImageUrl = imageRationaleUrl;
+        console.log("rationaleAttachmentImageUrl....111", this.rationaleAttachmentImageUrl);
+      })
+        .catch((err) => {
+          console.error(err);
+        }); 
     } else {
       this.isAnswerImage = false;
     }
@@ -240,10 +250,14 @@ export class EcgCasesPage implements OnInit, OnDestroy {
         console.log("tempDoc..", tempDoc);
 
         this.attachmentName = tempDoc.attachments[0];
-        this.ext = this.attachmentName.split('.').pop();
-        this.filename =  `${this.attachmentName.split('.')[0]}`;
-        console.log('filename...', this.filename);
-        console.log('ext...', this.ext);
+        if(this.attachmentName.filename){
+          this.attachmentName = this.attachmentName.filename;
+        }
+          this.ext = this.attachmentName.split('.').pop();
+          this.filename =  `${this.attachmentName.split('.')[0]}`;
+          console.log('filename...', this.filename);
+          console.log('ext...', this.ext);
+        
 
         this.rationaleAttachmentName = tempDoc.rationaleAttachments[0];
         this.rationaleExt = this.rationaleAttachmentName.split('.').pop();
@@ -344,8 +358,11 @@ export class EcgCasesPage implements OnInit, OnDestroy {
             this.isaddedbyme = false;
             this.commonService.hideLoading();
             this.loading = false;
+            console.log("this is 1st call...");
             this.commonService.translateText('caseEdited').subscribe((msg) => {
-              this.commonService.showAlert('Success', msg);
+              this.commonService.showAlert('Success', msg, msg, () => {
+                this.refreshCases('new');
+              });
             });
           }
         }
@@ -356,7 +373,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
       })
 
       this.firebaseService.getRationaleMediaUrl( doc.rationaleAttachments[0]).then((rationaleUrl: any) => {
-        doc.imageUrl = rationaleUrl;
+        doc.rationaleImageUrl = rationaleUrl;
         console.log('doc******rationale***********>', doc);
         if (!found) {
           this.cases.push(doc);
@@ -374,13 +391,16 @@ export class EcgCasesPage implements OnInit, OnDestroy {
           if (this.isaddedbyme) {
             this.isaddedbyme = false;
             this.commonService.hideLoading();
+            console.log("this is 2nd call...");
+            
             this.commonService.translateText('caseEdited').subscribe((msg) => {
-              this.commonService.showAlert('Success', msg);
+              this.commonService.showAlert('Success', msg, () => {
+                this.refreshCases('new');
+              });
             });
           }
         }
         this.setIsDetails(true);
-        this.refreshCases('new');
         this.commonService.hideLoading();
       })
       // this.refreshCases(filterValue);
@@ -539,7 +559,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     const itemMove = newCases.splice(from, 1)[0];
     newCases.splice(to, 0, itemMove);
     ev.detail.complete();
-    this.cases = newCases;    
+    this.cases = newCases;   
     this.firebaseService.reorderCase(skillLevelValue, to, from).then(() => {
       this.commonService.hideLoading();
     })
@@ -576,10 +596,11 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     
     if(isUploadUrl) {
       payload['uploadUrl'] = uploadUrl;
+      payload['dimensions'] = dimensions;
     } else {
       payload['rationaleUploadUrl'] = uploadUrl;
+      payload['dimensionsRationale'] = dimensions;
     }
-    payload['dimensions'] = dimensions;
     payload['firebaseId'] = this.selectedCase.firebaseId;
     payload['oldCaseNumber'] = this.selectedCase.index;
     this.isaddedbyme = true;
@@ -618,7 +639,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
         if (this.attachment.fromFirebase) {
           this.editCaseSubmit( true, this.attachment['file'], this.attachment.dimensions);
         } else {
-          this.firebaseService.uploadImage(this.attachment['file'], this.rationaleAttachment['file'], this.selectedCase.attachments[0]).then((uploadUrl) => {
+          this.firebaseService.uploadImage(this.attachment['file'], "", this.selectedCase.attachments[0]).then((uploadUrl) => {
             this.editCaseSubmit(true, uploadUrl, this.attachment.dimensions);
           })
             .catch((err) => {
@@ -634,10 +655,8 @@ export class EcgCasesPage implements OnInit, OnDestroy {
         if (this.rationaleAttachment.fromFirebase) {
           this.editCaseSubmit(false, this.rationaleAttachment['file'], this.rationaleAttachment.dimensions);
         } else {
-          this.firebaseService.uploadRationaleImage(
-            this.rationaleAttachment['file'], 
-            this.selectedCase.rationaleAttachments[0]).then((uploadUrl) => {
-            this.editCaseSubmit(false, this.rationaleAttachment['file'], this.rationaleAttachment.dimensions);
+          this.firebaseService.uploadRationaleImage( this.rationaleAttachment['file'], this.selectedCase.rationaleAttachments[0]).then((uploadUrl) => {
+            this.editCaseSubmit(false, uploadUrl, this.rationaleAttachment.dimensions);
           })
             .catch((err) => {
               console.error(err);
@@ -653,8 +672,9 @@ export class EcgCasesPage implements OnInit, OnDestroy {
         this.creatCaseForm.value.isPublish = false;
       }
       this.commonService.trimForm(this.creatCaseForm);
-      var payload = this.creatCaseForm.value;
+      var payload = this.creatCaseForm.value; 
       if(this.creatCaseForm.valid && this.attachment){
+        this.commonService.showLoading();
         
         if(this.rationaleAttachment == null || this.rationaleAttachment == "" || this.rationaleAttachment == undefined) {
           
@@ -699,7 +719,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
             payload['dimensionsRationale'] = this.rationaleAttachment.dimensions;
             console.log("attachment ... payload..", payload);
             console.log("payload...", payload);
-            this.firebaseService.createCase(payload).then((response) => {            
+            this.firebaseService.createCase(payload).then((response) => {
               this.getCases(payload.skillLevel);
               this.setSnapshot(payload.skillLevel);
               this.applyFilter(payload.skillLevel);
@@ -741,7 +761,6 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     } else {
         this.submitBtnDisabled = false;
       }
-     
       
     }
   }
@@ -750,16 +769,17 @@ export class EcgCasesPage implements OnInit, OnDestroy {
    * attachImage
    */
   public attachImage() {
-    if (this.isEdit || this.attachment ) {
-      this.commonService.showConfirmation(
-        "Confirm",
-        "ECG report is already attached, do you want to replace it?",
-        () => {
-          this.selectFile.nativeElement.click();
+    if (this.isEdit || this.attachment ) {      
+        this.commonService.showAlert("ECG Library", "Coming Soon!");
+      // this.commonService.showConfirmation(
+      //   "Confirm",
+      //   "ECG report is already attached, do you want to replace it?",
+      //   () => {
+      //     this.selectFile.nativeElement.click();
 
-        }, () => {
+      //   }, () => {
 
-        }, "Yes");
+      //   }, "Yes");
     } else {
       this.selectFile.nativeElement.click();
     }
@@ -770,21 +790,26 @@ export class EcgCasesPage implements OnInit, OnDestroy {
    * attach References Image
    */
    public attachReferencesImage() {
-    if (this.isEdit && this.isAnswerImage == true) {
-      this.commonService.showConfirmation(
-        "Confirm",
-        "ECG report is already attached, do you want to replace it?",
-        () => {
-          this.selectRefrenceFile.nativeElement.click();
-          this.isAnswerImage = true;
-        }, () => {
+    if (this.isEdit && this.isAnswerImage == true) {      
+      this.commonService.showAlert("ECG Library", "Coming Soon!");
+      // this.commonService.showConfirmation(
+      //   "Confirm",
+      //   "ECG report is already attached, do you want to replace it?",
+      //   () => {
+      //     this.selectRefrenceFile.nativeElement.click();
+      //     this.isAnswerImage = true;
+      //   }, () => {
 
-        }, "Yes");
+      //   }, "Yes");
     } else {
       this.isAnswerImage = true;
       this.selectRefrenceFile.nativeElement.click();
     }
 
+  }
+
+  redirectToWeb (link) {
+    window.open(link);
   }
 
   private isFileImage(file) {
@@ -1001,11 +1026,68 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   }
 
   public checkReorder() {
-    if (this.searchText && this.searchText.length) {            
+    if (this.searchText && this.searchText.length) {
       this.reorderGroup.disabled = true;
+      this.filterActiveCases = 0;
+
+      // for(let i=0; i<this.cases.length; i++){
+      //   if(this.cases[i].show){
+      //     this.filterCases.push(this.cases[i]);
+      //     this.filterActiveCases = this.filterCases.length;
+      //   }
+      // }
+      // this.filterCases = [];
+      // console.log("this.filterActiveCases...", this.filterActiveCases);
+
+
+      var items = this.cases;
+      var filter = this.searchText;
+      if (!items) {
+        return items;
+      }
+      if (!filter) {
+        let startIndex = (this.currentPage - 1) * 10;
+        let lastIndex = ((this.currentPage -1) * 10) + 10;
+  
+        items.map((item, index) => {
+          item.show = false;
+          if(index >= startIndex && index < lastIndex ) {
+            item.show = true;
+            this.filterCases.push(item);
+            this.filterActiveCases = this.filterCases.length;
+            console.log("this.filterActiveCases...*1", this.filterActiveCases);
+          }
+        });
+      }
+      filter = filter.toLowerCase();
+      items.map((item, index) => {
+        item.show = false;
+        const indexNumber = index + 1;
+        const indexname = "case " + indexNumber;
+        if ((indexname.indexOf(filter) !== -1
+          || item.details.toLowerCase().indexOf(filter) !== -1
+          || item.result.toLowerCase().indexOf(filter) !== -1)) {
+          item.show = true;
+        }
+        if(item.show){
+          this.filterCases.push(item);
+          this.filterActiveCases = this.filterCases.length;
+          console.log("this.filterActiveCases...*", this.filterActiveCases);
+        }
+        
+      })
+      this.filterCases = [];     
+      console.log("this.filterActiveCases...*", this.filterActiveCases);
+
     } else {
       this.reorderGroup.disabled = false;
     }
+  }
+
+  onClear (eve) {
+    console.log("eve...", eve);
+    this.filterCases = [];
+    this.filterActiveCases = false;
   }
 
   /**
@@ -1051,7 +1133,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     return await optionModal.present();
   }
 
-  async openViewer(selectedCase, isECGAttachment) { 
+  async openViewer(selectedCase, isECGAttachment) {
     if(isECGAttachment == 'isAttachment'){
       if(selectedCase.imagePreviewUrl){
         this.attachmentImageUrl = selectedCase.imagePreviewUrl;
@@ -1099,11 +1181,13 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     if(selectedCase.imagePreviewUrl) {
       this.rationaleAttachmentImageUrl = selectedCase.imagePreviewUrl;
     } else {
-      this.firebaseService.getRationaleMediaUrl(selectedData = selectedCase.rationaleAttachments[0]).then((imageRationaleUrl: any) => {
+      this.commonService.showLoading();
+      this.firebaseService.getRationaleMediaUrl(selectedCase.file).then((imageRationaleUrl: any) => {
         this.rationaleAttachmentImageUrl = imageRationaleUrl;
         console.log("rationaleAttachmentImageUrl....111", this.rationaleAttachmentImageUrl);
+        this.commonService.hideLoading();
       })
-        .catch((err) => {
+        .catch((err) => { 
           console.error(err);
         });      
     }

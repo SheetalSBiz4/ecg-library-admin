@@ -184,7 +184,7 @@ export class ValidatorService {
       references: [
         '',
         Validators.compose([
-          // Validators.required,
+          Validators.required,
           // Validators.maxLength(250)
         ]),
       ],

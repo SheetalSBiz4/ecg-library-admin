@@ -14,7 +14,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="main-contain-cls">
   <div id="container" class="container" >
 
     <div class="case-list">
@@ -33,7 +33,7 @@
 
         <!-- Search Bar -->
         <ion-searchbar class="search-bar" mode="ios" (ionChange)="checkReorder()" name="search" id="search"
-          [(ngModel)]="searchText"></ion-searchbar>
+          [(ngModel)]="searchText" (ionClear)="onClear($event)"></ion-searchbar>
 
         <!-- Delete Icon -->
         <ion-icon class="delete-icon" (click)="deleteAllchecked()" *ngIf="showDelete" src="assets/img/delete.svg">
@@ -57,7 +57,10 @@
 
       <!-- Total cases label -->
       <div class="cases-box">
-        <p style="width: 50%;">{{'cases'| translate}} {{activeCount}}</p>
+        <p style="width: 50%;" *ngIf="!filterActiveCases && filterActiveCases !== 0">{{'cases'| translate}} {{activeCount}}</p>
+        <p style="width: 50%;" *ngIf="filterActiveCases">{{'cases'| translate}} {{ filterActiveCases}}</p>
+        <p style="width: 50%;" *ngIf="filterActiveCases === 0">{{'cases'| translate}} 0 </p>
+
         <p style="width: 50%; text-align: right; margin-left: 10px;">Skill Level: {{ selectedCase?.skillLevel? selectedCase.skillLevel : skillLevelValue  }}</p>
       </div>
 
@@ -65,9 +68,9 @@
       <div class="cases-container">
         <ion-reorder-group (ionItemReorder)="reorderItems(skillLevelValue, $event)" disabled="false">
           <!-- Default reorder icon, end aligned items -->
-          <ng-container *ngFor="let item of cases | searchFilter: searchText: currentPage: itemsPerPage ;let i= index;">
+          <ng-container *ngFor="let item of cases | searchFilter: searchText: currentPage: itemsPerPage ;let i= index;">            
             <ion-item class="case" *ngIf="item.show" [attr.data-index]="i"
-              [ngClass]="{'selected':selectedCase?.index -1  == i}" (click)="setSelectedCase(item,i)">
+              [ngClass]="{'selected':selectedCase?.index -1  == i}" (click)="setSelectedCase(item, i)">
               <div class="case-container">
                 <img *ngIf="!item.isPublish" src="../../../assets/img/publish.svg"/>
                 <div class="not-publish-cls" *ngIf="item.isPublish" ></div>
@@ -108,7 +111,7 @@
         maxSize="9" directionLinks="true" autoHide="true" responsive="true" previousLabel="Previous" nextLabel="Next">
       </pagination-controls> -->
     </div>
-    <!-- View Case -->
+    <!------------------------- View Case ------------------------------->
     <!-- case -->
     <div *ngIf="isDetails && !loading && selectedCase" class="case-details">
       <!-- case title -->
@@ -182,13 +185,13 @@
        <!-- References -->
       <div class="case-description dotted-border">
         <p class="desc-heading">{{'references' | translate}}</p>
-        <p class="desc-details" [innerHTML]="selectedCase?.references"></p>
+        <p class="desc-details link-cls" (click)="redirectToWeb(selectedCase?.references)" [innerHTML]="selectedCase?.references"></p>
       </div>
 
       <!-- Supplement -->
       <div class="case-description dotted-border">
         <p class="desc-heading">{{'supplement' | translate}}</p>
-        <p class="desc-details" [innerHTML]="selectedCase?.supplement"></p>
+        <p class="desc-details link-cls" (click)="redirectToWeb(selectedCase?.supplement)" [innerHTML]="selectedCase?.supplement"></p>
       </div>
 
       <!-- edit / Delete buttons -->

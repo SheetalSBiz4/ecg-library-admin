@@ -653,9 +653,27 @@ p {
 }
 
 // chrome top scroll bar issue fixed
+*::-webkit-scrollbar {  
+        display: none !important; 
+       }
 ::-webkit-scrollbar {
   display: none;
+  -webkit-appearance: none;
+  width: 0;
+  overflow-y: hidden !important;
 }
+::-ms-scrollbar {
+  display: none;
+  -webkit-appearance: none;
+  overflow-y: hidden;
+  width: 0;
+}
+
+ion-content.main-contain-cls .scroll-y::webkit-scrollbar, ion-content.main-contain-cls .scroll-y { 
+  overflow-y: hidden !important;
+  display:none !important;
+  }
+
 // *::-webkit-scrollbar {
 //   -webkit-appearance: none;
 //   width: 4px;
