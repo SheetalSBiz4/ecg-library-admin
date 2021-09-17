@@ -3,9 +3,10 @@
   flex-direction: row;
   align-items: flex-start;
   background-color: var(--colorececec);
-  // height: calc(100vh);
-  height: -webkit-fill-available;  // scroll issue fixed
-  padding-top: var(--px20);
+  height: calc(100vh);
+  padding-top: 80px;
+  // height: -webkit-fill-available;  // scroll issue fixed
+  // padding-top: var(--px20);
 }
 .side-menu-visible.container {
   height: calc(100vh - var(--px56));
@@ -16,6 +17,11 @@
   .case-details {
     width: calc(60% - var(--px10));
   }
+}
+
+ion-header {
+  display: block;
+  position: absolute;
 }
 
 
@@ -93,7 +99,7 @@
 }
 
 .cases-container {
-  height: calc(100% - 200px);
+  height: calc(100% - 180px);
   overflow-y: auto;
   --background: transparent;
 }
@@ -215,7 +221,8 @@
 
   .cases-box {
     height: var(--px40);
-    padding-left: var(--px10);
+    // padding-left: var(--px10);
+    padding-left: 0px;
     background-color: var(--colorececec);
     --background: var(--colorececec);
     --background-hover: var(--colorf8f8f8);
@@ -711,7 +718,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
-  margin-top: 40px;
+  margin-top: 20px;
   span{
     color: var(--ion-color-primary);
   }
