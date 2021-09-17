@@ -9,7 +9,10 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "prod-deploy": "firebase deploy --only hosting:ecg-library",
+    "uat-deploy": "firebase deploy --only hosting:ecg-uat-library",
+    "dev-deploy": "firebase deploy --only hosting:ecg-dev-library"
   },
   "private": true,
   "dependencies": {

@@ -10,8 +10,8 @@ export class AppSetting {
     */
    public static get ENVIRONMENT_NAME(): string {
       return 'Production';
-      // return 'Test';
-      // return 'Local';
+      // return 'Uat';
+      // return 'Dev';
 
    }
 }
