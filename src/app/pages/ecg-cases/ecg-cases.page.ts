@@ -226,57 +226,54 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     this.attachment = undefined;
     this.rationaleAttachment = undefined;
     this.firebaseService.getCases(filterValue, false, this.pageLimit, false).then((res: any) => {
-      console.log("res...", res);
+      // console.log("res...", res);
       this.activeCount = res.length;
 
       res.forEach(tempDoc => {
-        console.log("tempDoc..", tempDoc);
+        // console.log("tempDoc..", tempDoc);
         this.attachmentName = tempDoc.attachments[0];
         if(this.attachmentName.filename){
           this.attachmentName = this.attachmentName.filename;
         }
         this.ext = this.attachmentName.split('.').pop();
         this.filename =  `${this.attachmentName.split('.')[0]}`;
-        console.log('filename...', this.filename);
-        console.log('ext...', this.ext);
+        // console.log('filename...', this.filename);
+        // console.log('ext...', this.ext);
 
         this.rationaleAttachmentName = tempDoc.rationaleAttachments[0];
         this.rationaleExt = this.rationaleAttachmentName.split('.').pop();
         this.rationaleFileName =  `${this.rationaleAttachmentName.split('.')[0]}`;
-        console.log('filename...', this.rationaleFileName);
-        console.log('ext...', this.rationaleExt);
+        // console.log('filename...', this.rationaleFileName);
+        // console.log('ext...', this.rationaleExt);
 
           if(tempDoc.rationaleAttachments){
             tempDoc.rationaleAttachments.forEach(RationaleElement => {
-              this.firebaseService.getRationaleMediaUrl(RationaleElement).then((rationaleUrl: any) => {
-                tempDoc.imageRationaleUrl = rationaleUrl;
-              })
-                .catch((err) => {
-                  console.error(err);
-                });
-          });          
-          console.log("tempDoc....111", tempDoc);
-        }
-
-        if(tempDoc.attachments) {
-          tempDoc.attachments.forEach(element => {
-            this.firebaseService.getMediaUrl(element).then((url: any) => {
-              tempDoc.imageUrl = url;
+            this.firebaseService.getRationaleMediaUrl(RationaleElement).then((rationaleUrl: any) => {
+              tempDoc.imageRationaleUrl = rationaleUrl;
             })
               .catch((err) => {
                 console.error(err);
               });
+          });          
+          // console.log("tempDoc....111", tempDoc);
+        }
+
+        if(tempDoc.attachments) {
+          tempDoc.attachments.forEach(element => {
+          this.firebaseService.getMediaUrl(element).then((url: any) => {
+            tempDoc.imageUrl = url;
+          })
+            .catch((err) => {
+              console.error(err);
+            });
           });
         }    
         this.selectedCase = tempDoc; 
-        console.log("tempDoc....222", tempDoc);
-        
-     });
-        
+        // console.log("tempDoc....222", tempDoc);        
+     });        
       this.cases = res;
       if (this.cases.length > 0) {
-        console.log("this.selectedCase************888888", this.selectedCase);
-        
+        // console.log("this.selectedCase************888888", this.selectedCase);        
         this.refreshSelectedCase();
       }
       this.commonService.hideLoading();
@@ -292,7 +289,6 @@ export class EcgCasesPage implements OnInit, OnDestroy {
    * setNewSnapshot
    */
   public setNewSnapshot(filterValue) {
-
     this.firebaseService.setNewSnapshot(filterValue, (doc) => {
       this.isEditOrNew = true;
       // console.log(2);
@@ -307,21 +303,15 @@ export class EcgCasesPage implements OnInit, OnDestroy {
         }
         return true;
       });
-
-      console.log("doc...", doc);
-      
+      console.log("doc...", doc);      
       // get the media ur of new doc
       // console.log('doc b4', JSON.stringify(doc));
       this.firebaseService.getMediaUrl( doc.attachments[0]).then((url: any) => {
         doc.imageUrl = url;
-        // doc.imageUrl = url;
         console.log('doc*****************>', doc);
         if (!found) {
-          // console.log('doc', doc);
-
           this.cases.push(doc);
-          console.log("Doc..------>111", doc);
-          
+          console.log("Doc..------>111", doc);          
           // show msg if added by this user
           if (this.isaddedbyme) {
             this.isaddedbyme = false;
@@ -330,7 +320,6 @@ export class EcgCasesPage implements OnInit, OnDestroy {
               this.commonService.showAlert('Success', msg);
             });
           }
-
         } else {
           this.cases.push(doc);
           if (this.isaddedbyme) {
@@ -339,7 +328,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
             this.loading = false;
             console.log("this is 1st call...");
             this.commonService.translateText('caseEdited').subscribe((msg) => {
-              this.commonService.showAlert('Success', msg, msg, () => {
+              this.commonService.showAlert('Success', msg, () => {
                 this.refreshCases('new');
               });
             });
@@ -348,7 +337,6 @@ export class EcgCasesPage implements OnInit, OnDestroy {
         this.setIsDetails(true);
         this.refreshCases('new');
         this.commonService.hideLoading();
-        // this.getCases(filterValue);
       })
 
       this.firebaseService.getRationaleMediaUrl( doc.rationaleAttachments[0]).then((rationaleUrl: any) => {
@@ -574,7 +562,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     console.log("payload...", payload);
     
     if(isUploadUrl) {
-      payload['uploadUrl'] = uploadUrl;
+      payload['uploadUrl'] = uploadUrl.filename;
       payload['dimensions'] = dimensions;
     } else {
       payload['rationaleUploadUrl'] = uploadUrl;
@@ -750,15 +738,15 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   public attachImage() {
     if (this.isEdit || this.attachment ) {      
         this.commonService.showAlert("ECG Library", "Coming Soon!");
-      // this.commonService.showConfirmation(
-      //   "Confirm",
-      //   "ECG report is already attached, do you want to replace it?",
-      //   () => {
-      //     this.selectFile.nativeElement.click();
+      this.commonService.showConfirmation(
+        "Confirm",
+        "ECG report is already attached, do you want to replace it?",
+        () => {
+          this.selectFile.nativeElement.click();
 
-      //   }, () => {
+        }, () => {
 
-      //   }, "Yes");
+        }, "Yes");
     } else {
       this.selectFile.nativeElement.click();
     }
@@ -771,15 +759,15 @@ export class EcgCasesPage implements OnInit, OnDestroy {
    public attachReferencesImage() {
     if (this.isEdit && this.isAnswerImage == true) {      
       this.commonService.showAlert("ECG Library", "Coming Soon!");
-      // this.commonService.showConfirmation(
-      //   "Confirm",
-      //   "ECG report is already attached, do you want to replace it?",
-      //   () => {
-      //     this.selectRefrenceFile.nativeElement.click();
-      //     this.isAnswerImage = true;
-      //   }, () => {
+      this.commonService.showConfirmation(
+        "Confirm",
+        "ECG report is already attached, do you want to replace it?",
+        () => {
+          this.selectRefrenceFile.nativeElement.click();
+          this.isAnswerImage = true;
+        }, () => {
 
-      //   }, "Yes");
+        }, "Yes");
     } else {
       this.isAnswerImage = true;
       this.selectRefrenceFile.nativeElement.click();
@@ -1196,11 +1184,12 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   await modal.present();
   var x = document.getElementsByClassName("custom-modal-image-viewer") ;
   let mod = x[0] as HTMLBaseElement;
-  mod.style.setProperty('--height', selectedCase.dimensionsRationale.height+'px');
-  mod.style.setProperty('--width', selectedCase.dimensionsRationale.width+'px');
-  mod.style.setProperty('display', 'flex');
-  return ;
+  if(this.selectedCase.dimensionsRationale) {
+    mod.style.setProperty('--height', this.selectedCase.dimensionsRationale.height+'px');
+    mod.style.setProperty('--width', this.selectedCase.dimensionsRationale.width+'px');
+    mod.style.setProperty('display', 'flex');
+    return ;
+  }
 }
 }
-
 }
