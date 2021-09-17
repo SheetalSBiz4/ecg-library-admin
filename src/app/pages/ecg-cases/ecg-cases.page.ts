@@ -87,7 +87,6 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   }
   ionViewWillEnter() {
     this.skillLevel = 'Beginner';
-    this.commonService.enableMenu(true);
     var d = document.getElementById('Beginner');
     d.className = "filter-label-cls-active";
   }
@@ -131,15 +130,13 @@ export class EcgCasesPage implements OnInit, OnDestroy {
         d.className = "filter-label-cls";
       }
     }
-    
     document.getElementById("myForm").style.display = "none";
     this.isFilterOpen = false;
-
     this.getCases(value);
     this.setSnapshot(value);
   }
 
-/**
+  /**
    * logout- function to be executed on press of signout button
    */
  public logout() {
@@ -162,7 +159,6 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.SideMenuVisibleSubsription.unsubscribe();
   }
 
   public setSelectedCase(item, i) {
@@ -170,7 +166,6 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     this.selectedCase = item;
     this.setIsDetails(true);
     console.log("this.selectedCase ...choose", this.selectedCase);
-
     if(this.selectedCase.rationaleAttachments[0] != "") {
       this.isAnswerImage = true;
       this.firebaseService.getRationaleMediaUrl(this.selectedCase.rationaleAttachments[0]).then((imageRationaleUrl: any) => {
@@ -187,18 +182,10 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   }
 
   public refreshSelectedCase() {
-    // console.log("here");
 
     const selectedPosition = this.selectedCase ? this.selectedCase.index - 1 : 0;
     const casesLength = this.cases ? this.cases.length : 0
     console.log("this.selectedCase...", this.selectedCase);
-
-    // this.attachmentName = this.selectedCase.attachments[0];
-    // const ext = this.attachmentName.split('.').pop();
-    // const filename = `${this.attachmentName}.${ext}`;
-    // console.log('filename...', filename);
-    // console.log('ext...', ext);
-    
     
     if (selectedPosition == 0 && casesLength > 0) {
       let index = this.itemsPerPage * (this.currentPage - 1);
@@ -221,16 +208,12 @@ export class EcgCasesPage implements OnInit, OnDestroy {
       this.activeCount = this.sequence.length;
       const total = this.activeCount / this.itemsPerPage;
       const remainder = this.activeCount % this.itemsPerPage;
-
       this.totalPage = remainder ? parseInt(total.toString()) + 1 : total;
-
       if ((this.currentPage > this.totalPage) && this.totalPage > 0) {
         this.currentPage = this.totalPage;
       }
       this.refreshCases('existing');
-
     })
-
   }
 
   /**
@@ -248,16 +231,14 @@ export class EcgCasesPage implements OnInit, OnDestroy {
 
       res.forEach(tempDoc => {
         console.log("tempDoc..", tempDoc);
-
         this.attachmentName = tempDoc.attachments[0];
         if(this.attachmentName.filename){
           this.attachmentName = this.attachmentName.filename;
         }
-          this.ext = this.attachmentName.split('.').pop();
-          this.filename =  `${this.attachmentName.split('.')[0]}`;
-          console.log('filename...', this.filename);
-          console.log('ext...', this.ext);
-        
+        this.ext = this.attachmentName.split('.').pop();
+        this.filename =  `${this.attachmentName.split('.')[0]}`;
+        console.log('filename...', this.filename);
+        console.log('ext...', this.ext);
 
         this.rationaleAttachmentName = tempDoc.rationaleAttachments[0];
         this.rationaleExt = this.rationaleAttachmentName.split('.').pop();
@@ -281,8 +262,6 @@ export class EcgCasesPage implements OnInit, OnDestroy {
           tempDoc.attachments.forEach(element => {
             this.firebaseService.getMediaUrl(element).then((url: any) => {
               tempDoc.imageUrl = url;
-              // tempDoc.imageUrl = url;
-              
             })
               .catch((err) => {
                 console.error(err);

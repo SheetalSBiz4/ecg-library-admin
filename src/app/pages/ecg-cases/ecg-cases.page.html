@@ -336,8 +336,20 @@
         <div class="case-description">
           <p class="label-text">{{'referencesLink' | translate}}</p>
 
-          <input formControlName="references" name="references" id="references" class="input-cls"/>
-          
+          <!-- <input formControlName="references" name="references" id="references" class="input-cls"/> -->
+          <editor formControlName="references" name="references" id="references" class="textarea no-border"
+            apiKey="sq6kvq4itc0hhndlq9a9a6y974zcdjxe51lhd7mpr2si72th"
+            [init]="{
+              plugins: 'link autolink',
+              toolbar:'', height : '100%',
+              link_default_protocol: 'https',
+              default_link_target: '_blank',
+              menubar:false,
+              statusbar: false,
+              base_url: '/tinymce',
+              suffix: '.min' }">
+          </editor>
+
           <div *ngIf="isSubmit && f.references.errors " class="error-block">
             <small *ngIf="f.references.errors.required">{{ 'referencesRequired' | translate
               }}</small>
@@ -347,7 +359,20 @@
         <!-- Supplement -->
         <div class="case-description">
           <p class="label-text">{{'supplement' | translate}}</p>
-          <input formControlName="supplement" name="supplement" id="supplement" class="input-cls"/>
+          <!-- <input formControlName="supplement" name="supplement" id="supplement" class="input-cls"/> -->
+
+          <editor formControlName="supplement" name="supplement" id="supplement" class="textarea no-border"
+            apiKey="sq6kvq4itc0hhndlq9a9a6y974zcdjxe51lhd7mpr2si72th"
+            [init]="{
+              plugins: 'link autolink',
+              toolbar:'', height : '100%',
+              link_default_protocol: 'https',
+              default_link_target: '_blank',
+              menubar:false,
+              statusbar: false,
+              base_url: '/tinymce',
+              suffix: '.min' }">
+          </editor>
           <div *ngIf="isSubmit && f.supplement.errors " class="error-block">
             <small *ngIf="f.supplement.errors.required">{{ 'supplementRequired' | translate }}</small>
           </div>
