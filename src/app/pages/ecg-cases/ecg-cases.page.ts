@@ -601,6 +601,11 @@ export class EcgCasesPage implements OnInit, OnDestroy {
       } else {
         this.creatCaseForm.value.isPublish = false;
       }
+
+      console.log("this.selectedCase...", this.selectedCase);
+      
+      console.log("this.creatCaseForm.value....", this.creatCaseForm.value);
+      
       if (this.creatCaseForm.valid && this.attachment) {
         this.commonService.showLoading();
         if (this.attachment.fromFirebase) {
@@ -617,7 +622,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
         this.submitBtnDisabled = false;
       }
 
-      if (this.rationaleAttachment) {
+      if (this.creatCaseForm.valid && this.rationaleAttachment) {
         this.commonService.showLoading();
         if (this.rationaleAttachment.fromFirebase) {
           this.editCaseSubmit(false, this.rationaleAttachment['file'], this.rationaleAttachment.dimensions);
@@ -629,6 +634,8 @@ export class EcgCasesPage implements OnInit, OnDestroy {
               console.error(err);
             })
         }
+      } else {
+        this.submitBtnDisabled = false;
       }
     } else {
       this.isSubmit = true;
@@ -737,7 +744,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
    */
   public attachImage() {
     if (this.isEdit || this.attachment ) {      
-        this.commonService.showAlert("ECG Library", "Coming Soon!");
+        // this.commonService.showAlert("ECG Library", "Coming Soon!");
       this.commonService.showConfirmation(
         "Confirm",
         "ECG report is already attached, do you want to replace it?",
@@ -758,7 +765,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
    */
    public attachReferencesImage() {
     if (this.isEdit && this.isAnswerImage == true) {      
-      this.commonService.showAlert("ECG Library", "Coming Soon!");
+      // this.commonService.showAlert("ECG Library", "Coming Soon!");
       this.commonService.showConfirmation(
         "Confirm",
         "ECG report is already attached, do you want to replace it?",
@@ -996,17 +1003,6 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     if (this.searchText && this.searchText.length) {
       this.reorderGroup.disabled = true;
       this.filterActiveCases = 0;
-
-      // for(let i=0; i<this.cases.length; i++){
-      //   if(this.cases[i].show){
-      //     this.filterCases.push(this.cases[i]);
-      //     this.filterActiveCases = this.filterCases.length;
-      //   }
-      // }
-      // this.filterCases = [];
-      // console.log("this.filterActiveCases...", this.filterActiveCases);
-
-
       var items = this.cases;
       var filter = this.searchText;
       if (!items) {
@@ -1083,11 +1079,14 @@ export class EcgCasesPage implements OnInit, OnDestroy {
 
   }
 
-  public openModal = async () => {
+  public openModal = async (skillLevelForSwitch) => {
+    console.log("this.activeCount....", this.activeCount);
+    
     const optionModal = await this.modalController.create({
       component: SwitchCasePage,
       componentProps: {
-        maxValue: this.activeCount
+        maxValue: this.activeCount,
+        skillLevel: skillLevelForSwitch
       },
       cssClass: 'switch-case',
       backdropDismiss: false

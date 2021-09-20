@@ -38,6 +38,9 @@
         <!-- Delete Icon -->
         <ion-icon class="delete-icon" (click)="deleteAllchecked()" *ngIf="showDelete" src="assets/img/delete.svg">
         </ion-icon>
+        <ion-icon class="switch-icon" (click)="openModal(selectedCase.skillLevel)" *ngIf="!showDelete && cases.length > 1 "
+          src="assets/img/switch.svg"></ion-icon>
+
         <ion-icon class="switch-icon" (click)="openForm(isFilterOpen)" src="assets/img/Filter.svg"></ion-icon>
         <!-- <button class="open-button" (click)="openForm()">Open Form</button> -->
         
@@ -232,9 +235,9 @@
 
         </div>
         <!-- Case Code  -->
-        <div class="case-description">
-          <p class="label-text">{{'CaseCode' | translate}}</p>
-          <input class="input-cls" placeholder="Enter case code" id="caseCode" formControlName="caseCode" name="caseCode" />
+        <div class="case-description one-line-cls">
+          <p class="label-text one-line-label-cls">{{'CaseCode' | translate}}</p>
+          <input class="input-cls one-line-input-cls" placeholder="Enter case code" id="caseCode" formControlName="caseCode" name="caseCode" />
           <div *ngIf="isSubmit && f.caseCode.errors" class="error-block">
             <small *ngIf=" f.caseCode.errors.required">{{ 'caseDetailsRequired' | translate
               }}</small>
@@ -242,14 +245,12 @@
         </div>
 
         <!-- Skill Level  -->
-        <div class="case-description">
-          <p class="label-text">{{'skillLevel' | translate}}</p>
-
-          <select class="single-select-cls" placeholder="Select" id="skillLevel" formControlName="skillLevel" name="skillLevel" >
+        <div class="case-description one-line-cls">
+          <p class="label-text one-line-label-cls">{{'skillLevel' | translate}}</p>
+          <select class="single-select-cls one-line-input-cls" placeholder="Select" id="skillLevel" formControlName="skillLevel" name="skillLevel" >
             <!-- (change)="changeSkill($event)" -->
             <option *ngFor="let skill of skillLevelOption" value="{{ skill.value }}"> {{ skill.name }} </option>
           </select>
-
           <div *ngIf="isSubmit && f.skillLevel.errors" class="error-block">
             <small *ngIf=" f.skillLevel.errors.required">{{ 'caseDetailsRequired' | translate
               }}</small>
@@ -259,7 +260,7 @@
         <!-- Case details -->
         <div class="case-description">
           <p class="label-text">{{'caseDetails2' | translate}}</p>
-          <ion-textarea style="height: 100px;" rows="5" id="details" formControlName="details" name="details"
+          <ion-textarea style="height: 110px;" rows="5" id="details" formControlName="details" name="details"
             class="textarea" autoGrow="true" placeholder="{{'enter'|translate}}"></ion-textarea>
 
 
@@ -297,7 +298,7 @@
         </div>
         <div class="case-description">
           <p class="label-text">{{'result2' | translate}}</p>
-          <ion-textarea id="result" rows="5" formControlName="result" name="result" class="textarea" autoGrow="true"
+          <ion-textarea style="height: 45px !important;" id="result" rows="3" formControlName="result" name="result" class="textarea" autoGrow="true"
             placeholder="{{'enter'|translate}}"></ion-textarea>
 
           <div *ngIf="isSubmit && f.result.errors" class="error-block">
@@ -309,7 +310,7 @@
         <!-- Next Step -->
         <div class="case-description">
           <p class="label-text">{{'nextStep2' | translate}}</p>
-          <ion-textarea id="nextStep" rows="5" formControlName="nextStep" name="nextStep" class="textarea"
+          <ion-textarea style="height: 130px !important;" id="nextStep" rows="6" formControlName="nextStep" name="nextStep" class="textarea"
             autoGrow="true" placeholder="{{'enter'|translate}}"></ion-textarea>
 
           <div *ngIf="isSubmit && f.nextStep.errors " class="error-block">

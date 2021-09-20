@@ -42,8 +42,6 @@ export class SearchFilterPipe implements PipeTransform {
         || item.result.toLowerCase().indexOf(filter) !== -1)) {
         item.show = true;
       }
-
-
       return item;
     })
   }

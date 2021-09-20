@@ -315,6 +315,10 @@ export class FirebaseService {
    * reorderCase - function to reorder the case in firebase
    */
   public switchCase(skillLevel, to, from) {
+    console.log("skillLevel....", skillLevel);
+    console.log("to....", to);
+    console.log("from....", from);
+    
     return new Promise((resolve, reject) => {
       [this.sequence[to], this.sequence[from]] = [this.sequence[from], this.sequence[to]];
 
