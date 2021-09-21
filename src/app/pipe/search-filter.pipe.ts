@@ -39,6 +39,7 @@ export class SearchFilterPipe implements PipeTransform {
       if ((indexname.indexOf(filter) !== -1
         // || item.nextStep.toLowerCase().indexOf(filter) !== -1
         || item.details.toLowerCase().indexOf(filter) !== -1
+        || item.caseCode.toLowerCase().indexOf(filter) !== -1
         || item.result.toLowerCase().indexOf(filter) !== -1)) {
         item.show = true;
       }
