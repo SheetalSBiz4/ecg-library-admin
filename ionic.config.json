@@ -1,5 +1,8 @@
 {
   "name": "ECG Clinical Case",
-  "integrations": {},
-  "type": "angular"
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular",
+  "app_id": ""
 }

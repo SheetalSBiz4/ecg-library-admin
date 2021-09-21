@@ -57,7 +57,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   public rationaleFileName = "";
   public rationaleExt = "";
   public skillLevelOption = [
-    {name: 'Beginner', value:'Beginner', selected:true},
+    {name: 'Beginner', value:'Beginner'},
     {name: 'Intermediate', value:'Intermediate'},
     {name: 'Advanced', value:'Advanced'},
     {name: 'Expert', value:'Expert'}
@@ -423,6 +423,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     this.isEdit = false;
     this.attachment = undefined;
     this.rationaleAttachment = undefined;
+    this.skillLevel = "";
     this.setMaxValue(this.activeCount + 1, true);
   }
 

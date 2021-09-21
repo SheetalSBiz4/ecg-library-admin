@@ -41,7 +41,7 @@
         <ion-icon class="switch-icon" (click)="openModal(selectedCase.skillLevel)" *ngIf="!showDelete && cases.length > 1 "
           src="assets/img/switch.svg"></ion-icon>
 
-        <ion-icon class="switch-icon" (click)="openForm(isFilterOpen)" src="assets/img/Filter.svg"></ion-icon>
+        <ion-icon class="switch-icon" (click)="openForm(isFilterOpen)" src="assets/img/skill_level.svg"></ion-icon>
         <!-- <button class="open-button" (click)="openForm()">Open Form</button> -->
         
         <div class="form-popup" id="myForm">
@@ -238,23 +238,34 @@
         <div class="case-description one-line-cls">
           <p class="label-text one-line-label-cls">{{'CaseCode' | translate}}</p>
           <input class="input-cls one-line-input-cls" placeholder="Enter case code" id="caseCode" formControlName="caseCode" name="caseCode" />
-          <div *ngIf="isSubmit && f.caseCode.errors" class="error-block">
-            <small *ngIf=" f.caseCode.errors.required">{{ 'caseDetailsRequired' | translate
-              }}</small>
-          </div>
+        </div>
+        <div style="text-align: center !important;" *ngIf="isSubmit && f.caseCode.errors" class="error-block">
+          <small *ngIf=" f.caseCode.errors.required">{{ 'caseDetailsRequired' | translate
+            }}</small>
         </div>
 
         <!-- Skill Level  -->
         <div class="case-description one-line-cls">
           <p class="label-text one-line-label-cls">{{'skillLevel' | translate}}</p>
-          <select class="single-select-cls one-line-input-cls" placeholder="Select" id="skillLevel" formControlName="skillLevel" name="skillLevel" >
-            <!-- (change)="changeSkill($event)" -->
+
+          <ion-item class="select-item-cls">
+            <ion-select placeholder="Select One" class="single-select-cls" name="skillLevel" id="skillLevel" formControlName="skillLevel">
+              <ion-select-option *ngFor="let skill of skillLevelOption" value="{{ skill.value }}">{{ skill.name }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+
+          <!-- <select class="single-select-cls one-line-input-cls" name="skillLevel" id="skillLevel" formControlName="skillLevel" required>
+            (change)="changeSkill($event)"
+            <option value="" selected disabled data-isdefault="true">
+              Select
+            </option>
             <option *ngFor="let skill of skillLevelOption" value="{{ skill.value }}"> {{ skill.name }} </option>
-          </select>
-          <div *ngIf="isSubmit && f.skillLevel.errors" class="error-block">
-            <small *ngIf=" f.skillLevel.errors.required">{{ 'caseDetailsRequired' | translate
-              }}</small>
-          </div>
+          </select>           -->
+        </div>
+        <div style="text-align: center !important;" *ngIf="isSubmit && f.skillLevel.errors" class="error-block">
+          <small *ngIf=" f.skillLevel.errors.required">{{ 'caseDetailsRequired' | translate
+            }}</small>
         </div>
 
         <!-- Case details -->
