@@ -67,6 +67,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   public skillLevelValue = 'Beginner';
   public attachmentImageUrl: "";
   public rationaleAttachmentImageUrl = "";
+  public isReferenceAttachSelected: boolean = false;
   public isAnswerImage = false;
 
   constructor(
@@ -560,10 +561,14 @@ export class EcgCasesPage implements OnInit, OnDestroy {
    */
   public editCaseSubmit(isUploadUrl, uploadUrl, dimensions) {
     const payload = this.creatCaseForm.value;
-    console.log("payload...", payload);
+    console.log("payload...", payload);    
     
     if(isUploadUrl) {
-      payload['uploadUrl'] = uploadUrl.filename;
+      if(uploadUrl.filename) {
+        payload['uploadUrl'] = uploadUrl.filename;      
+      } else {
+        payload['uploadUrl'] = uploadUrl;
+      }
       payload['dimensions'] = dimensions;
     } else {
       payload['rationaleUploadUrl'] = uploadUrl;
@@ -772,19 +777,20 @@ export class EcgCasesPage implements OnInit, OnDestroy {
         "ECG report is already attached, do you want to replace it?",
         () => {
           this.selectRefrenceFile.nativeElement.click();
-          this.isAnswerImage = true;
+          this.isReferenceAttachSelected = true;
         }, () => {
 
         }, "Yes");
     } else {
-      this.isAnswerImage = true;
+      this.isReferenceAttachSelected = true;
       this.selectRefrenceFile.nativeElement.click();
     }
 
   }
 
   redirectToWeb (link) {
-    window.open(link);
+    var linkUrl = link.replace(/<[^>]+>/g, '');
+    window.open(linkUrl, "_blank");
   }
 
   private isFileImage(file) {
@@ -792,6 +798,9 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   }
 
   public handleSelectRefrenceFile = (e) => {
+    if(this.isReferenceAttachSelected) {
+      this.isAnswerImage = true;
+    }
     e.preventDefault();
     var file = e.target.files[0];
     var tempMediaType = "image";
