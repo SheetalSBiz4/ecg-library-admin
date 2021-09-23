@@ -788,9 +788,14 @@ export class EcgCasesPage implements OnInit, OnDestroy {
 
   }
 
+  // link redirection
   redirectToWeb (link) {
     var linkUrl = link.replace(/<[^>]+>/g, '');
-    window.open(linkUrl, "_blank");
+    if(linkUrl.startsWith("http://")) {
+      window.open(linkUrl, "_blank");
+    } else {
+      window.open("http://" + linkUrl, "_blank");
+    }
   }
 
   private isFileImage(file) {
