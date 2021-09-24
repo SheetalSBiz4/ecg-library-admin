@@ -188,13 +188,19 @@
        <!-- References -->
       <div class="case-description dotted-border">
         <p class="desc-heading">{{'references' | translate}}</p>
-        <p class="desc-details link-cls" (click)="redirectToWeb(selectedCase?.references)" [innerHTML]="selectedCase?.references"></p>
+        <div *ngFor="let referencesLink of referencesLinkUrl">
+          <p class="desc-details link-cls"  (click)="redirectToWeb(referencesLink)"> {{referencesLink}} </p>
+        </div>
+        <!-- <p class="desc-details link-cls" (click)="redirectToWeb(selectedCase?.references)" [innerHTML]="selectedCase?.references"></p> -->
       </div>
 
       <!-- Supplement -->
       <div class="case-description dotted-border">
         <p class="desc-heading">{{'supplement' | translate}}</p>
-        <p class="desc-details link-cls" (click)="redirectToWeb(selectedCase?.supplement)" [innerHTML]="selectedCase?.supplement"></p>
+        <div *ngFor="let link of supplimentLinkUrl">
+          <p class="desc-details link-cls"  (click)="redirectToWeb(link)"> {{link}} </p>
+        </div>
+        <!-- <p class="desc-details link-cls" (click)="redirectToWeb(selectedCase?.supplement)" [innerHTML]="selectedCase?.supplement"></p> -->
       </div>
 
       <!-- edit / Delete buttons -->

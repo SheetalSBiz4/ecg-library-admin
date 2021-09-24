@@ -69,6 +69,8 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   public rationaleAttachmentImageUrl = "";
   public isReferenceAttachSelected: boolean = false;
   public isAnswerImage = false;
+  public supplimentLinkUrl = [];
+  public referencesLinkUrl = []
 
   constructor(
     private router: Router,
@@ -167,6 +169,34 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     this.selectedCase = item;
     this.setIsDetails(true);
     console.log("this.selectedCase ...choose", this.selectedCase);
+
+
+    // seperate supplement the multiple link in array
+    var supplementUrl = this.selectedCase.supplement
+    var linkUrl = supplementUrl.replace(/<[^>]+>/g, '');
+    console.log("linkUrl", linkUrl);
+    this.supplimentLinkUrl = linkUrl.match(/[^\r\n]+/g);
+    this.supplimentLinkUrl.forEach( (item, index) => {
+      if(item === "&nbsp;"){
+        this.supplimentLinkUrl.splice(index,1);
+      } 
+    });
+
+  // seperate references the multiple link in array
+    var referencesUrl = this.selectedCase.references
+    var referencesLink = referencesUrl.replace(/<[^>]+>/g, '');
+    console.log("referencesLink", referencesLink);
+    this.referencesLinkUrl = referencesLink.match(/[^\r\n]+/g);
+
+    this.referencesLinkUrl.forEach( (item, index) => {
+      if(item === "&nbsp;"){
+        this.referencesLinkUrl.splice(index,1);
+      } 
+    });
+
+    console.log("this.supplimentLinkUrl..", this.supplimentLinkUrl);    
+    
+
     if(this.selectedCase.rationaleAttachments[0] != "") {
       this.isAnswerImage = true;
       this.firebaseService.getRationaleMediaUrl(this.selectedCase.rationaleAttachments[0]).then((imageRationaleUrl: any) => {
@@ -253,6 +283,8 @@ export class EcgCasesPage implements OnInit, OnDestroy {
               tempDoc.imageRationaleUrl = rationaleUrl;
             })
               .catch((err) => {
+                this.commonService.hideLoading();
+                this.loading = false;
                 console.error(err);
               });
           });          
