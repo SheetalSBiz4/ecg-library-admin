@@ -143,7 +143,7 @@ export class ValidatorService {
       caseCode: [
         '',
         Validators.compose([
-          Validators.required,
+          // Validators.required,
           // Validators.maxLength(250)
         ]),
       ],
