@@ -324,7 +324,6 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   public setNewSnapshot(filterValue) {
     this.firebaseService.setNewSnapshot(filterValue, (doc) => {
       this.isEditOrNew = true;
-      // console.log(2);
       let found = false;
       let existingIndex = 0;
       this.cases.every((element, index) => {
@@ -525,7 +524,6 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     // console.log(1);
     const existingCases = [...this.cases, ...this.extraCases];
     const newCases = [];
-    const casesNotFetched = [];
     this.sequence.forEach(element => {
       existingCases.every((v, index) => {
         if (v.firebaseId == element) {
@@ -541,6 +539,34 @@ export class EcgCasesPage implements OnInit, OnDestroy {
 
     this.extraCases = existingCases;
     this.cases = newCases;
+    
+    //Show isPublish=false at the last
+    var newCasesArray = this.cases;
+      var caseArray = [];
+      this.cases = [];
+
+      newCasesArray.map((newCasesArray, index) => {
+        const indexNumber = index + 1;
+        const indexname = "case " + indexNumber;
+        if (newCasesArray.isPublish) {
+            caseArray.push(newCasesArray);
+        }
+        console.log("caseArray...", caseArray);        
+      })
+      newCasesArray.map((newCasesArray, index) => {
+        const indexNumber = index + 1;
+        const indexname = "case " + indexNumber;
+        if (newCasesArray.isPublish != true) {
+          newCasesArray.isPublish = false;
+            caseArray.push(newCasesArray);
+        }
+        console.log("caseArray...", caseArray);        
+      })
+      this.cases = caseArray;
+      console.log("res...after change...", this.cases);
+
+    console.log("this.cases..refreshCases", this.cases);
+    /////////////////////////////////////////////
     this.refreshSelectedCase();
   }
 
