@@ -347,6 +347,17 @@ ion-header {
   .dotted-border {
     border-bottom: var(--px1) dashed var(--color777777);
   }
+  .one-line-desc {
+    display: inline-flex;
+    width: 100%;
+  }
+  .one-line-decs-heading {
+    width: 14% !important;
+  }
+  .one-line-decs-details {
+    width: 86% !important;
+    margin-top: 0px !important;
+  }
   .case-description {
     padding-left: var(--px21);
     padding-top: var(--px20);
@@ -359,6 +370,7 @@ ion-header {
       font-style: normal;
       text-align: left;
       text-transform: uppercase;
+      margin-bottom: 10px;
     }
     .desc-details {
       margin-top: var(--px13);

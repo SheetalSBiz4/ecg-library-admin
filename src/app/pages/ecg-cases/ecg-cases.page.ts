@@ -168,22 +168,13 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     item['index'] = i + 1;
     this.selectedCase = item;
     this.setIsDetails(true);
-    console.log("this.selectedCase ...choose", this.selectedCase);
+    console.log("this.selectedCase...choose", this.selectedCase);
 
-
-    // seperate supplement the multiple link in array
-    var supplementUrl = this.selectedCase.supplement
-    var linkUrl = supplementUrl.replace(/<[^>]+>/g, '');
-    console.log("linkUrl", linkUrl);
-    this.supplimentLinkUrl = linkUrl.match(/[^\r\n]+/g);
-    this.supplimentLinkUrl.forEach( (item, index) => {
-      if(item === "&nbsp;"){
-        this.supplimentLinkUrl.splice(index,1);
-      } 
-    });
-
-  // seperate references the multiple link in array
-    var referencesUrl = this.selectedCase.references
+    // seperate references the multiple link in array
+  if(this.selectedCase.references){
+    var referencesUrl = this.selectedCase.references;
+    console.log('referencesUrl...', referencesUrl);
+    
     var referencesLink = referencesUrl.replace(/<[^>]+>/g, '');
     console.log("referencesLink", referencesLink);
     this.referencesLinkUrl = referencesLink.match(/[^\r\n]+/g);
@@ -193,9 +184,30 @@ export class EcgCasesPage implements OnInit, OnDestroy {
         this.referencesLinkUrl.splice(index,1);
       } 
     });
+    console.log("this.referencesLinkUrl..", this.referencesLinkUrl); 
+  } else {
+    this.selectedCase.references = [];
+    this.referencesLinkUrl = this.selectedCase.references;
+    console.log("this.referencesLinkUrl..else", this.referencesLinkUrl); 
+  }
 
-    console.log("this.supplimentLinkUrl..", this.supplimentLinkUrl);    
-    
+  // seperate supplement the multiple link in array
+  if(this.selectedCase.supplement){
+    var supplementUrl = this.selectedCase.supplement
+    var linkUrl = supplementUrl.replace(/<[^>]+>/g, '');
+    console.log("linkUrl", linkUrl);
+    this.supplimentLinkUrl = linkUrl.match(/[^\r\n]+/g);
+    this.supplimentLinkUrl.forEach( (item, index) => {
+      if(item === "&nbsp;"){
+        this.supplimentLinkUrl.splice(index,1);
+      } 
+    });
+    console.log("this.supplimentLinkUrl..", this.supplimentLinkUrl);
+  }  else {
+    this.selectedCase.supplement = [];
+    this.supplimentLinkUrl = this.selectedCase.supplement;
+    console.log("this.supplimentLinkUrl..else", this.supplimentLinkUrl);
+  }
 
     if(this.selectedCase.rationaleAttachments[0] != "") {
       this.isAnswerImage = true;
@@ -216,7 +228,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
 
     const selectedPosition = this.selectedCase ? this.selectedCase.index - 1 : 0;
     const casesLength = this.cases ? this.cases.length : 0
-    console.log("this.selectedCase...", this.selectedCase);
+    console.log("refreshSelectedCase....this.selectedCase...", this.selectedCase);
     
     if (selectedPosition == 0 && casesLength > 0) {
       let index = this.itemsPerPage * (this.currentPage - 1);
@@ -285,7 +297,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
               .catch((err) => {
                 this.commonService.hideLoading();
                 this.loading = false;
-                console.error(err);
+                // console.error(err);
               });
           });          
           // console.log("tempDoc....111", tempDoc);
