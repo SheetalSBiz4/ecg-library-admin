@@ -171,7 +171,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     console.log("this.selectedCase...choose", this.selectedCase);
 
     // seperate references the multiple link in array
-  if(this.selectedCase.references){
+  if(this.selectedCase.references) {
     var referencesUrl = this.selectedCase.references;
     console.log('referencesUrl...', referencesUrl);
     
@@ -180,9 +180,12 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     this.referencesLinkUrl = referencesLink.match(/[^\r\n]+/g);
 
     this.referencesLinkUrl.forEach( (item, index) => {
-      if(item === "&nbsp;"){
+      if(item == "&nbsp;") {
         this.referencesLinkUrl.splice(index,1);
       } 
+      if(item == item.startsWith("https://")){
+        this.referencesLinkUrl = referencesUrl.replace(/^https?:\/\//, '');
+      }
     });
     console.log("this.referencesLinkUrl..", this.referencesLinkUrl); 
   } else {
@@ -198,9 +201,12 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     console.log("linkUrl", linkUrl);
     this.supplimentLinkUrl = linkUrl.match(/[^\r\n]+/g);
     this.supplimentLinkUrl.forEach( (item, index) => {
-      if(item === "&nbsp;"){
+      if(item == "&nbsp;"){
         this.supplimentLinkUrl.splice(index,1);
       } 
+      if(item == item.startsWith("https://")){
+        this.supplimentLinkUrl = linkUrl.replace(/^https?:\/\//, '');
+      }
     });
     console.log("this.supplimentLinkUrl..", this.supplimentLinkUrl);
   }  else {
@@ -861,7 +867,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   // link redirection
   redirectToWeb (link) {
     var linkUrl = link.replace(/<[^>]+>/g, '');
-    if(linkUrl.startsWith("http://")) {
+    if(linkUrl.startsWith("http://") || linkUrl.startsWith("https://")) {
       window.open(linkUrl, "_blank");
     } else {
       window.open("http://" + linkUrl, "_blank");
@@ -1207,7 +1213,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
         slideOptions:{
           centeredSlides: true,
           passiveListeners: false,
-          zoom: { enabled: false },
+          zoom: { enabled: true },
           allowSlideNext:false,
           allowSlidePrev:false,
           autoHeight:true,
@@ -1253,7 +1259,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
       slideOptions:{
         centeredSlides: true,
         passiveListeners: false,
-        zoom: { enabled: false },
+        zoom: { enabled: true },
         allowSlideNext:false,
         allowSlidePrev:false,
         autoHeight:true,

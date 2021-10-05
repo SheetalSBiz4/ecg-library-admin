@@ -4,7 +4,8 @@
   align-items: flex-start;
   background-color: var(--colorececec);
   height: calc(100vh);
-  padding-top: 80px;
+  //// padding-top: 80px;
+  padding-top: 70px;
   // height: -webkit-fill-available;  // scroll issue fixed
   // padding-top: var(--px20);
 }
@@ -93,7 +94,8 @@ ion-header {
 }
 
 .cases-container {
-  height: calc(100% - 180px);
+  //// height: calc(100% - 180px);
+  height: calc(100% - 135px);
   overflow-y: auto;
   --background: transparent;
 }
@@ -110,6 +112,7 @@ ion-header {
 
 }
 .case-list {
+  height: 35px;
   position: relative;
   display: block;
   margin: 0px var(--px5) 0 var(--px10);
@@ -726,7 +729,7 @@ ion-header {
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
-  margin-top: 20px;
+  //// margin-top: 20px;
   span{
     color: var(--ion-color-primary);
   }
