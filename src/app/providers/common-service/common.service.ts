@@ -78,7 +78,8 @@ export class CommonService {
     this.isLoading = true;
     this.loadingCtrl.create({
       message: `<ion-spinner name="crescent" color="tertiary" class="app-loader-icon"></ion-spinner>`,
-      duration: 30000,
+      // duration: 30000,
+      duration: 1500,
       translucent: true,
       cssClass: 'custom-loading',
       spinner: null
