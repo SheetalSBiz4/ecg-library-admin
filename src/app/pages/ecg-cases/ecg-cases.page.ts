@@ -171,7 +171,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     console.log("this.selectedCase...choose", this.selectedCase);
 
     // seperate references the multiple link in array
-  if(this.selectedCase.references) {
+  if(this.selectedCase.references != null) {
     var referencesUrl = this.selectedCase.references;
     console.log('referencesUrl...', referencesUrl);
     
@@ -189,13 +189,13 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     });
     console.log("this.referencesLinkUrl..", this.referencesLinkUrl); 
   } else {
-    this.selectedCase.references = [];
+    this.selectedCase.references = null;
     this.referencesLinkUrl = this.selectedCase.references;
     console.log("this.referencesLinkUrl..else", this.referencesLinkUrl); 
   }
 
   // seperate supplement the multiple link in array
-  if(this.selectedCase.supplement){
+  if(this.selectedCase.supplement != null){
     var supplementUrl = this.selectedCase.supplement
     var linkUrl = supplementUrl.replace(/<[^>]+>/g, '');
     console.log("linkUrl", linkUrl);
@@ -209,8 +209,8 @@ export class EcgCasesPage implements OnInit, OnDestroy {
       }
     });
     console.log("this.supplimentLinkUrl..", this.supplimentLinkUrl);
-  }  else {
-    this.selectedCase.supplement = [];
+  } else {
+    this.selectedCase.supplement = null;
     this.supplimentLinkUrl = this.selectedCase.supplement;
     console.log("this.supplimentLinkUrl..else", this.supplimentLinkUrl);
   }
@@ -1209,6 +1209,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     const modal = await this.modalController.create({
       component: ViewerModalComponent,     
       componentProps: {
+        title: "You can double click to zoom in/zoom out",
         src: selectedCase.imageUrl ? selectedCase.imageUrl : selectedCase.imagePreviewUrl,
         slideOptions:{
           centeredSlides: true,
@@ -1247,7 +1248,8 @@ export class EcgCasesPage implements OnInit, OnDestroy {
         console.log("rationaleAttachmentImageUrl....111", this.rationaleAttachmentImageUrl);
         this.commonService.hideLoading();
       })
-        .catch((err) => { 
+        .catch((err) => {
+          this.commonService.hideLoading();
           console.error(err);
         });      
     }
@@ -1257,6 +1259,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   const modal = await this.modalController.create({
     component: ViewerModalComponent,     
     componentProps: {
+      title: "You can double click to zoom in/zoom out",
       src: this.rationaleAttachmentImageUrl ? this.rationaleAttachmentImageUrl : selectedCase.imagePreviewUrl,
       slideOptions:{
         centeredSlides: true,
