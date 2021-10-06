@@ -380,6 +380,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
             this.commonService.translateText('caseEdited').subscribe((msg) => {
               this.commonService.showAlert('Success', msg, () => {
                 this.refreshCases('new');
+                this.commonService.hideLoading();
               });
             });
           }
@@ -1046,7 +1047,6 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     this.firebaseService.getRationaleMediaUrl(this.selectedCase.rationaleAttachments[0]).then((imageRationaleUrl) => {      
       this.selectedCase.rationaleImageUrl = imageRationaleUrl;
       console.log("imageRationaleUrl....", this.selectedCase.rationaleImageUrl);
-      
     })
       .catch((err) => {
         console.error(err);
@@ -1232,9 +1232,12 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     await modal.present();
     var x = document.getElementsByClassName("custom-modal-image-viewer") ;
     let mod = x[0] as HTMLBaseElement;
-    mod.style.setProperty('--height', selectedCase.dimensions.height+'px');
-    mod.style.setProperty('--width', selectedCase.dimensions.width+'px');
+    mod.style.setProperty('--height', '100%');
+    mod.style.setProperty('--width', 'calc(100% - 18px)');
     mod.style.setProperty('display', 'flex');
+    // mod.style.setProperty('--height', selectedCase.dimensions.height+'px');
+    // mod.style.setProperty('--width', selectedCase.dimensions.width+'px');
+    // mod.style.setProperty('display', 'flex');
     return ;
   } else if(isECGAttachment == 'isRationaleAttachment'){
     
@@ -1243,7 +1246,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
       this.rationaleAttachmentImageUrl = selectedCase.imagePreviewUrl;
     } else {
       this.commonService.showLoading();
-      this.firebaseService.getRationaleMediaUrl(selectedCase.file).then((imageRationaleUrl: any) => {
+      this.firebaseService.getRationaleMediaUrl(selectedCase.rationaleAttachments[0]).then((imageRationaleUrl: any) => {
         this.rationaleAttachmentImageUrl = imageRationaleUrl;
         console.log("rationaleAttachmentImageUrl....111", this.rationaleAttachmentImageUrl);
         this.commonService.hideLoading();
@@ -1282,12 +1285,15 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   await modal.present();
   var x = document.getElementsByClassName("custom-modal-image-viewer") ;
   let mod = x[0] as HTMLBaseElement;
-  if(this.selectedCase.dimensionsRationale) {
-    mod.style.setProperty('--height', this.selectedCase.dimensionsRationale.height+'px');
-    mod.style.setProperty('--width', this.selectedCase.dimensionsRationale.width+'px');
+  // if(this.selectedCase.dimensionsRationale) {
+    mod.style.setProperty('--height', '100%');
+    mod.style.setProperty('--width', 'calc(100% - 18px)');
     mod.style.setProperty('display', 'flex');
+    // mod.style.setProperty('--height', this.selectedCase.dimensionsRationale.height+'px');
+    // mod.style.setProperty('--width', this.selectedCase.dimensionsRationale.width+'px');
+    // mod.style.setProperty('display', 'flex');
     return ;
-  }
+  // } 
 }
 }
 }
