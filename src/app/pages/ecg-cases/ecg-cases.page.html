@@ -278,7 +278,7 @@
         <!-- Case details -->
         <div class="case-description">
           <p class="label-text">{{'caseDetails2' | translate}}</p>
-          <ion-textarea style="height: 110px;" rows="5" id="details" formControlName="details" name="details"
+          <ion-textarea style="height: 110px;" rows="3" id="details" formControlName="details" name="details"
             class="textarea" autoGrow="true" placeholder="{{'enter'|translate}}"></ion-textarea>
 
 
@@ -299,8 +299,9 @@
             <ion-img *ngIf="attachment" class="attach-image" (click)="openViewer(attachment, 'isAttachment')"
               [src]="attachment?.imagePreviewUrl" alt="attachment">
             </ion-img>
-
-            <ion-button id="attachEcgReport" (click)="attachImage()" class="attch-btn">{{'attachEcgReport' | translate}}
+            <ion-button *ngIf="!attachment" id="attachEcgReport" (click)="attachImage()" class="attch-btn">{{'attachEcgReport' | translate}}
+            </ion-button>
+            <ion-button *ngIf="attachment" id="attachEcgReport" (click)="attachImage()" class="attch-btn"> Remove ECG file
             </ion-button>
 
           </div>

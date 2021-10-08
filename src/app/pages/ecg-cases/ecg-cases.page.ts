@@ -835,7 +835,8 @@ export class EcgCasesPage implements OnInit, OnDestroy {
         // this.commonService.showAlert("ECG Library", "Coming Soon!");
       this.commonService.showConfirmation(
         "Confirm",
-        "ECG report is already attached, do you want to replace it?",
+        // "ECG report is already attached, do you want to replace it?",
+        "The current ECG image file will be removed. You need to select another ECG file to replace the current one. Do you want to continue?",
         () => {
           this.selectFile.nativeElement.click();
 
