@@ -64,7 +64,7 @@
         <p style="width: 50%;" *ngIf="filterActiveCases">{{'cases'| translate}} {{ filterActiveCases}}</p>
         <p style="width: 50%;" *ngIf="filterActiveCases === 0">{{'cases'| translate}} 0 </p>
 
-        <p style="width: 50%; text-align: right; margin-left: 10px;">Skill Level: {{ selectedCase?.skillLevel? selectedCase.skillLevel : skillLevelValue  }}</p>
+        <p style="width: 50%; text-align: right; margin-left: 10px;">Level: {{ selectedCase?.skillLevel? selectedCase.skillLevel : skillLevelValue  }}</p>
       </div>
 
       <!-- case list -->
@@ -255,6 +255,7 @@
           <p class="label-text one-line-label-cls">{{'skillLevel' | translate}}</p>
 
           <ion-item class="select-item-cls">
+            <!-- <ion-label style="display:none">{{'skillLevel' | translate}}</ion-label> -->
             <ion-select placeholder="Select One" class="single-select-cls" name="skillLevel" id="skillLevel" formControlName="skillLevel">
               <ion-select-option *ngFor="let skill of skillLevelOption" value="{{ skill.value }}">{{ skill.name }}</ion-select-option>
             </ion-select>

@@ -1261,8 +1261,8 @@ export class EcgCasesPage implements OnInit, OnDestroy {
           console.error(err);
         });      
     }
-    console.log("select..", this.selectedCase);
-    console.log("rationaleAttachmentImageUrl....111", this.rationaleAttachmentImageUrl);
+    console.log("select.111.", this.selectedCase);
+    console.log("rationaleAttachmentImageUrl....222", this.rationaleAttachmentImageUrl);
       
   const modal = await this.modalController.create({
     component: ViewerModalComponent,     
@@ -1281,7 +1281,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
         // width:this.selectedCase.dimensionsRationale ? this.selectedCase.dimensionsRationale.width: null,
         height: '100%',
         width: 'calc(100% - 18px)',
-       }
+      }
     },
     cssClass: ['ion-img-viewer', 'custom-modal-image-viewer'] ,
     keyboardClose: true,
@@ -1289,7 +1289,11 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   });
   await modal.present();
   var x = document.getElementsByClassName("custom-modal-image-viewer") ;
+  console.log("x.....", x);
+  
   let mod = x[0] as HTMLBaseElement;
+  console.log("mod.....", mod);
+  
   // if(this.selectedCase.dimensionsRationale) {
     mod.style.setProperty('--height', '100%');
     mod.style.setProperty('--width', 'calc(100% - 18px)');
@@ -1298,7 +1302,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     // mod.style.setProperty('--width', this.selectedCase.dimensionsRationale.width+'px');
     // mod.style.setProperty('display', 'flex');
     return ;
-  // } 
+  // }
 }
 }
 }
