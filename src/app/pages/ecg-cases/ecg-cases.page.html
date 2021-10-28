@@ -337,18 +337,25 @@
               }}</small>
           </div>
         </div>
-
         <div class="attachment">
           <input id="selectRefrenceFile" #selectRefrenceFile style=" display: 'none' " type="file" (change)="handleSelectRefrenceFile($event)"
             accept="image/*" />
+            
             <p class="desc-heading">{{'answerImage' | translate}}</p>
           <!-- Attachment buttons -->
           <div class="btn-container" [ngClass]="{'align-right':rationaleAttachment}">
-            <ion-img *ngIf="rationaleAttachment && isAnswerImage" class="attach-image" (click)="openViewer(rationaleAttachment, 'isRationaleAttachment')"
-              [src]="rationaleAttachment?.imagePreviewUrl ? rationaleAttachment?.imagePreviewUrl : selectedCase.rationaleImageUrl" alt="rationaleAttachment">
+            <ion-img *ngIf="rationaleAttachment?.imagePreviewUrl && isAnswerImage" class="attach-image" (click)="openViewer(rationaleAttachment, 'isRationaleAttachment')"
+              [src]="rationaleAttachment.imagePreviewUrl ? rationaleAttachment.imagePreviewUrl : selectedCase.rationaleImageUrl" alt="rationaleAttachment">
             </ion-img>
-            <ion-button id="attachRefrenceReport" (click)="attachReferencesImage()" class="attch-btn">{{'attachImage' | translate}}
+            
+            <div>
+              <ion-button *ngIf="rationaleAttachment?.imagePreviewUrl && isAnswerImage" id="attachRefrenceReport" (click)="removeReferencesImage(rationaleAttachment?.imagePreviewUrl)" class="attch-btn custom-width">{{'removeImage' | translate}}
+              </ion-button>
+            <ion-button *ngIf="rationaleAttachment.imagePreviewUrl == null && isAnswerImage" id="attachRefrenceReport" (click)="attachReferencesImage(rationaleAttachment?.imagePreviewUrl)" class="attch-btn custom-width">{{'attachImage' | translate}}
             </ion-button>
+            <ion-button *ngIf="rationaleAttachment?.imagePreviewUrl && isAnswerImage" id="attachRefrenceReport" (click)="attachReferencesImage(rationaleAttachment?.imagePreviewUrl)" class="attch-btn custom-width">{{'replaceImage' | translate}}
+            </ion-button>
+          </div>
           </div>
         </div>
 

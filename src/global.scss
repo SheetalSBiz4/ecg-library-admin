@@ -657,6 +657,9 @@ p {
     .swiper-container{
       overflow: scroll !important;
       list-style : unset !important;
+      ion-slide{
+        margin: auto;
+      }
     }
     // .swiper-wrapper{
     //   overflow: auto !important;

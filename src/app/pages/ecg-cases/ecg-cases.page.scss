@@ -118,7 +118,7 @@ ion-header {
   margin: 0px var(--px5) 0 var(--px10);
   background-color: var(--colorececec);
   // min-width: 472px;
-  width: calc(40% - var(--px20));
+  width: calc(30% - var(--px20));
   height: calc(100%);
   border-radius: 0;
   // border-radius: var(--px20) 0 0;
@@ -321,7 +321,7 @@ ion-header {
   background-color: var(--colorffffff);
   margin: 0px var(--px10) 0px var(--px5);
   // min-width: 700px;
-  width: calc(60% - var(--px10));
+  width: calc(70% - var(--px10));
   height: calc(100%);
   border-radius: 0 0 0 0;
   // border-radius: 0 var(--px20) 0 0;
@@ -446,6 +446,10 @@ ion-header {
         --border-color: #d2d2d2;
         --background: linear-gradient(to top, #eaeaea 0%, #ffffff 100%);
         // background-image: linear-gradient(to top, #eaeaea 0%, #ffffff 100%);
+      }
+
+      .custom-width{
+        width: 85%;
       }
 
 

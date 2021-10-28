@@ -17,7 +17,8 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
 
   private SideMenuVisibleSubsription;
-  public isSideMenuVisible
+  public isSideMenuVisible;
+  public isPublishFlag = undefined;
   // to switch between view and edit/create
   public isDetails = true;
   public isEdit = false;
@@ -165,6 +166,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   }
 
   public setSelectedCase(item, i) {
+    this.isPublishFlag = item.isPublish;
     item['index'] = i + 1;
     this.selectedCase = item;
     this.setIsDetails(true);
@@ -201,6 +203,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     var linkUrl = supplementUrl.replace(/<[^>]+>/g, '');
     console.log("linkUrl", linkUrl);
     this.supplimentLinkUrl = linkUrl.match(/[^\r\n]+/g);
+    if(this.supplimentLinkUrl != null && this.supplimentLinkUrl.length > 0){
     this.supplimentLinkUrl.forEach( (item, index) => {
       if(item == "&nbsp;"){
         this.supplimentLinkUrl.splice(index,1);
@@ -209,6 +212,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
         this.supplimentLinkUrl = linkUrl.replace(/^https?:\/\//, '');
       }
     });
+  }
     console.log("this.supplimentLinkUrl..", this.supplimentLinkUrl);
   } else {
     this.selectedCase.supplement = null;
@@ -289,12 +293,14 @@ export class EcgCasesPage implements OnInit, OnDestroy {
         this.filename =  `${this.attachmentName.split('.')[0]}`;
         // console.log('filename...', this.filename);
         // console.log('ext...', this.ext);
-
-        this.rationaleAttachmentName = tempDoc.rationaleAttachments[0];
-        this.rationaleExt = this.rationaleAttachmentName.split('.').pop();
-        this.rationaleFileName =  `${this.rationaleAttachmentName.split('.')[0]}`;
-        // console.log('filename...', this.rationaleFileName);
-        // console.log('ext...', this.rationaleExt);
+        if(tempDoc.rationaleAttachments.length > 0){
+          this.rationaleAttachmentName = tempDoc.rationaleAttachments[0];
+          this.rationaleExt = this.rationaleAttachmentName.split('.').pop();
+          this.rationaleFileName =  `${this.rationaleAttachmentName.split('.')[0]}`;
+          // console.log('filename...', this.rationaleFileName);
+          // console.log('ext...', this.rationaleExt);
+        }
+       
 
           if(tempDoc.rationaleAttachments){
             tempDoc.rationaleAttachments.forEach(RationaleElement => {
@@ -652,8 +658,12 @@ export class EcgCasesPage implements OnInit, OnDestroy {
     }
     payload['firebaseId'] = this.selectedCase.firebaseId;
     payload['oldCaseNumber'] = this.selectedCase.index;
+    payload['previousPublishFlag'] = this.isPublishFlag;
     this.isaddedbyme = true;
+    console.log("inside editCaseSubmit ==>", payload);
+    
     this.firebaseService.editCase(payload).then((response) => {
+      
       this.getCases(payload.skillLevel);
       this.setSnapshot(payload.skillLevel);
       this.applyFilter(payload.skillLevel);
@@ -694,6 +704,7 @@ export class EcgCasesPage implements OnInit, OnDestroy {
         if (this.attachment.fromFirebase) {
           this.editCaseSubmit( true, this.attachment['file'], this.attachment.dimensions);
         } else {
+          console.log("inside submit condition 2");
           this.firebaseService.uploadImage(this.attachment['file'], "", this.selectedCase.attachments[0]).then((uploadUrl) => {
             this.editCaseSubmit(true, uploadUrl, this.attachment.dimensions);
           })
@@ -708,8 +719,10 @@ export class EcgCasesPage implements OnInit, OnDestroy {
 
       if (this.creatCaseForm.valid && this.rationaleAttachment) {
         if (this.rationaleAttachment.fromFirebase) {
+          console.log("inside submit condition 3");
           this.editCaseSubmit(false, this.rationaleAttachment['file'], this.rationaleAttachment.dimensions);
         } else {
+          console.log("inside submit condition 4");
           this.firebaseService.uploadRationaleImage( this.rationaleAttachment['file'], this.selectedCase.rationaleAttachments[0]).then((uploadUrl) => {
             this.editCaseSubmit(false, uploadUrl, this.rationaleAttachment.dimensions);
           })
@@ -852,8 +865,10 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   /**
    * attach References Image
    */
-   public attachReferencesImage() {
-    if (this.isEdit && this.isAnswerImage == true) {      
+   public attachReferencesImage(url) {
+     console.log("url ==>", url);
+     
+    if (this.isEdit && this.isAnswerImage == true && url != undefined) {      
       // this.commonService.showAlert("ECG Library", "Coming Soon!");
       this.commonService.showConfirmation(
         "Confirm",
@@ -1306,4 +1321,19 @@ export class EcgCasesPage implements OnInit, OnDestroy {
   // }
 }
 }
+public removeReferencesImage(){
+  
+  this.firebaseService.deleterationaleImage(this.selectedCase.rationaleAttachments[0]).then((uploadUrl) => {
+              
+       console.log("inside removeReferencesImage =>", uploadUrl);
+        //this.rationaleAttachment = {};
+       this.rationaleAttachment.imagePreviewUrl = null;
+      this.selectRefrenceFile.nativeElement.value = "";
+      this.selectedCase.rationaleImageUrl = null;
+        })
+          .catch((err) => {
+           
+          })
+       
+  }
 }
