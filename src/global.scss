@@ -708,4 +708,6 @@ ion-content.main-contain-cls .scroll-y::webkit-scrollbar, ion-content.main-conta
 // *::-webkit-scrollbar-corner{
 //   background-color: transparent;
 // }
-
+.header-md::after{
+  content: none;
+}

@@ -263,18 +263,22 @@ export class FirebaseService {
         rationaleAttachments: [data.rationaleUploadUrl],
         dimensions: data.dimensions,
       };
+      // if(data.isPublish != data.previousPublishFlag){
+      //   data.caseNumber = this.sequence.length;
+      // }
       firestore
         .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${Case.skillLevel}/Cases`)
         .doc(data.firebaseId)
         .set(Case, { merge: true })
         .then((res) => {
-          // no need to update the sequence
+          // no need to update the sequence && (data.isPublish == data.previousPublishFlag)
           if (data.caseNumber == data.oldCaseNumber && (data.isPublish == data.previousPublishFlag)) {
             resolve(false);
-          }else if(data.isPublish != data.previousPublishFlag){
-            console.log("inside flagchange");
-            
-            this.reorderAfterPublishFlagChange(Case.skillLevel, data.caseNumber - 1, data.oldCaseNumber - 1).then(() => {
+          }
+          else if(data.isPublish != data.previousPublishFlag){
+           
+            var curIndex = this.sequence.indexOf(data.firebaseId)
+            this.reorderAfterPublishFlagChange(Case.skillLevel, data.caseNumber - 1, curIndex).then(() => {
               resolve(true);
             }).catch((err) => {
               reject(err);
@@ -703,8 +707,10 @@ export class FirebaseService {
 
   public reorderAfterPublishFlagChange(skillLevel, to, from) {
     return new Promise((resolve, reject) => {
-      this.sequence.splice(this.sequence.length, 0, ...this.sequence.splice(from, 1))
-
+      this.sequence.splice(this.sequence.length - 1, 0, ...this.sequence.splice(from, 1))
+      console.log("this.sequence.length =>", this.sequence.length);
+      console.log("this.sequence =>", this.sequence);
+      
       let updateDoc = {
         sequence: this.sequence,
         updated_time: firebase.firestore.FieldValue.serverTimestamp(),
@@ -721,6 +727,8 @@ export class FirebaseService {
     });
 
   }
+
+  
 }
 
 

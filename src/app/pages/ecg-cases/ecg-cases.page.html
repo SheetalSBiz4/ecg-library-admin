@@ -19,11 +19,12 @@
 
     <div class="case-list">
       <!-- fab placed to the (vertical) center and end -->
-      <ion-fab>
+      <!-- <ion-fab [ngStyle]="{'top.px': resultH}"> -->
+        <!-- <ion-fab >
         <ion-fab-button (click)="setIsDetails(false);" class="fab-add">
           <ion-icon src="assets/img/plus.svg"></ion-icon>
         </ion-fab-button>
-      </ion-fab>
+      </ion-fab> -->
       <div class="search-box-container">
         <!-- checkbox -->
         <div class="checkbox-container">
@@ -95,10 +96,34 @@
           </ng-container>
         </ion-reorder-group>
         <p class="no-data" *ngIf="cases.length == 0 && !loading">{{'noData'| translate}}</p>
+        <ion-row class="pagination-container">
+          <ion-col>
+            <ion-button (click)="prev()">
+              <ion-icon slot="icon-only"
+                [src]="currentPage == 1 ?'assets/img/previous_disable.svg':'assets/img/previous_enable.svg'"></ion-icon>
+            </ion-button>
+            <ion-button (click)="next()">
+              <ion-icon slot="icon-only"
+                [src]="currentPage == totalPage ?'assets/img/next_disable.svg':'assets/img/next_enable.svg'"></ion-icon>
+            </ion-button>
+          </ion-col>
+          <ion-col style="margin-bottom: 15px;">
+            <div>
+              <p> <span>{{currentPage}}</span> of {{totalPage}}</p>
+            </div>
+          </ion-col>
+          <ion-col>
+            <ion-fab >
+              <ion-fab-button (click)="setIsDetails(false);" class="fab-add">
+                <ion-icon src="assets/img/plus.svg"></ion-icon>
+              </ion-fab-button>
+            </ion-fab>
+          </ion-col>
+        </ion-row>
       </div>
-      <div class="pagination-container">
+      <!-- <div class="pagination-container"> -->
         <!-- *ngIf="(cases.length >0) && (!searchText || searchText && searchText.length ==0)" -->
-        <div>
+        <!-- <div>
           <ion-button (click)="prev()">
             <ion-icon slot="icon-only"
               [src]="currentPage == 1 ?'assets/img/previous_disable.svg':'assets/img/previous_enable.svg'"></ion-icon>
@@ -109,7 +134,20 @@
           </ion-button>
         </div>
         <p> <span>{{currentPage}}</span> of {{totalPage}}</p>
-      </div>
+        <div>
+          <ion-fab >
+            <ion-fab-button (click)="setIsDetails(false);" class="fab-add">
+              <ion-icon src="assets/img/plus.svg"></ion-icon>
+            </ion-fab-button>
+          </ion-fab>
+        </div>
+      </div> -->
+
+     
+
+      
+
+
       <!-- <pagination-controls class="my-pagination" id="foo" (pageChange)="pageChanged($event)" (pageBoundsCorrection)="pageChanged($event)"
         maxSize="9" directionLinks="true" autoHide="true" responsive="true" previousLabel="Previous" nextLabel="Next">
       </pagination-controls> -->
@@ -251,10 +289,12 @@
         </div> -->
 
         <!-- Skill Level  -->
+        
         <div class="case-description one-line-cls">
           <p class="label-text one-line-label-cls">{{'skillLevel' | translate}}</p>
 
           <ion-item class="select-item-cls">
+           
             <!-- <ion-label style="display:none">{{'skillLevel' | translate}}</ion-label> -->
             <ion-select placeholder="Select One" class="single-select-cls" name="skillLevel" id="skillLevel" formControlName="skillLevel">
               <ion-select-option *ngFor="let skill of skillLevelOption" value="{{ skill.value }}">{{ skill.name }}</ion-select-option>
@@ -278,8 +318,16 @@
         <!-- Case details -->
         <div class="case-description">
           <p class="label-text">{{'caseDetails2' | translate}}</p>
-          <ion-textarea style="height: 110px;" rows="3" id="details" formControlName="details" name="details"
-            class="textarea" autoGrow="true" placeholder="{{'enter'|translate}}"></ion-textarea>
+          <ion-textarea 
+          style="height: 110px;" 
+          rows="3" 
+          id="details" 
+          formControlName="details" 
+          name="details"
+          class="textarea" 
+          autoGrow="true" 
+          placeholder="{{'enter'|translate}}">
+        </ion-textarea>
 
 
           <div *ngIf="isSubmit && f.details.errors" class="error-block">
@@ -329,8 +377,16 @@
         <!-- Next Step -->
         <div class="case-description">
           <p class="label-text">{{'nextStep2' | translate}}</p>
-          <ion-textarea style="height: 130px !important;" id="nextStep" rows="6" formControlName="nextStep" name="nextStep" class="textarea"
-            autoGrow="true" placeholder="{{'enter'|translate}}"></ion-textarea>
+          <ion-textarea 
+            style="height: 130px !important;" 
+            id="nextStep" 
+            rows="3" 
+            formControlName="nextStep" 
+            name="nextStep" 
+            class="textarea"
+            autoGrow="true" 
+            placeholder="{{'enter'|translate}}">
+          </ion-textarea>
 
           <div *ngIf="isSubmit && f.nextStep.errors " class="error-block">
             <small *ngIf="f.nextStep.errors.required">{{ 'caseNextRequired' | translate
@@ -345,16 +401,17 @@
           <!-- Attachment buttons -->
           <div class="btn-container" [ngClass]="{'align-right':rationaleAttachment}">
             <ion-img *ngIf="rationaleAttachment?.imagePreviewUrl && isAnswerImage" class="attach-image" (click)="openViewer(rationaleAttachment, 'isRationaleAttachment')"
-              [src]="rationaleAttachment.imagePreviewUrl ? rationaleAttachment.imagePreviewUrl : selectedCase.rationaleImageUrl" alt="rationaleAttachment">
+              [src]="rationaleAttachment ? rationaleAttachment.imagePreviewUrl : selectedCase.rationaleImageUrl" alt="rationaleAttachment">
             </ion-img>
-            
+           
             <div>
-              <ion-button *ngIf="rationaleAttachment?.imagePreviewUrl && isAnswerImage" id="attachRefrenceReport" (click)="removeReferencesImage(rationaleAttachment?.imagePreviewUrl)" class="attch-btn custom-width">{{'removeImage' | translate}}
+              <ion-button *ngIf="rationaleAttachment?.imagePreviewUrl" id="attachRefrenceReport" (click)="removeReferencesImage()" class="attch-btn custom-width">{{'removeImage' | translate}}
               </ion-button>
-            <ion-button *ngIf="rationaleAttachment.imagePreviewUrl == null && isAnswerImage" id="attachRefrenceReport" (click)="attachReferencesImage(rationaleAttachment?.imagePreviewUrl)" class="attch-btn custom-width">{{'attachImage' | translate}}
+           
+            <ion-button  id="attachRefrenceReport" (click)="attachReferencesImage(rationaleAttachment?.imagePreviewUrl)" class="attch-btn custom-width">{{rationaleAttachment?.imagePreviewUrl != null ? 'Replace Image' : 'Attach Image'}}
             </ion-button>
-            <ion-button *ngIf="rationaleAttachment?.imagePreviewUrl && isAnswerImage" id="attachRefrenceReport" (click)="attachReferencesImage(rationaleAttachment?.imagePreviewUrl)" class="attch-btn custom-width">{{'replaceImage' | translate}}
-            </ion-button>
+
+            
           </div>
           </div>
         </div>

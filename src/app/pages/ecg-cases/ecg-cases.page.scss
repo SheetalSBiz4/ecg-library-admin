@@ -94,8 +94,9 @@ ion-header {
 }
 
 .cases-container {
-  //// height: calc(100% - 180px);
+  // height: calc(100% - 180px);
   height: calc(100% - 135px);
+  //height: auto;
   overflow-y: auto;
   --background: transparent;
 }
@@ -123,10 +124,13 @@ ion-header {
   border-radius: 0;
   // border-radius: var(--px20) 0 0;
   ion-fab {
-    position: absolute;
-    right: var(--px30);
+    // position: absolute;
+    // right: var(--px30);
     // bottom: 65px;
-    bottom: 15px;  // scroll issue fixed
+    //bottom: 15px;  // scroll issue fixed
+    position: absolute;
+    top: -7px;
+    left: 69px;
     .fab-add {
       width: var(--px60);
       height:var(--px60);
@@ -729,11 +733,11 @@ ion-header {
 }
 
 .pagination-container {
-  display: flex;
-  flex-direction: row;
+   display: flex;
+  // flex-direction: row;
   align-items: center;
   justify-content: flex-start;
-  //// margin-top: 20px;
+   margin-top: 20px;
   span{
     color: var(--ion-color-primary);
   }
@@ -785,10 +789,10 @@ body {font-family: Arial, Helvetica, sans-serif;}
   position: fixed;
   border: 3px solid #f1f1f1;
   z-index: 9;
-  left: 30%;
+  left: 21.5%;
   // top: 19%;
   // left: 33%;
-  top: 131px;
+  top: 140px;
   border-radius: 10px;
 }
 
