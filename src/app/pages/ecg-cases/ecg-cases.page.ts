@@ -286,11 +286,11 @@ export class EcgCasesPage implements OnInit, OnDestroy {
       res.forEach(tempDoc => {
         // console.log("tempDoc..", tempDoc);
         this.attachmentName = tempDoc.attachments[0];
-        if(this.attachmentName.filename){
+        if(this.attachmentName?.filename){
           this.attachmentName = this.attachmentName.filename;
         }
-        this.ext = this.attachmentName.split('.').pop();
-        this.filename =  `${this.attachmentName.split('.')[0]}`;
+        this.ext = this.attachmentName?.split('.').pop();
+        this.filename =  `${this.attachmentName?.split('.')[0]}`;
         // console.log('filename...', this.filename);
         // console.log('ext...', this.ext);
         if(tempDoc.rationaleAttachments.length > 0){
