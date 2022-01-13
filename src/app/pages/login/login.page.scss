@@ -3,8 +3,8 @@
 ion-checkbox {
   --border-radius: var(--px2);
   --border-width: var(--px1);
-  // --background: transparent;
-  --background: var(--colorffffff);
+  --background: transparent;
+  // --background: var(--colorffffff);
   --border-color: var(--colorffffff);
   --checkmark-color: var(--ion-color-primary);
   --background-checked: var(--colorffffff);
@@ -14,6 +14,21 @@ ion-checkbox {
   height: var(--px20);
   max-width: var(--px20);
   margin-inline-end: var(--px10);
+}
+
+.welcome-greeting {
+  margin-top: var(--px23);
+  margin-bottom: var(--px23);
+  color: var(--colorfff1f4);
+  font-size: var(--px20);
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: normal;
+  text-align: center;
+  text-transform: uppercase;
+  font-style: normal;
+  letter-spacing: normal;
+  line-height: normal;
 }
 
 .checkbox-container {

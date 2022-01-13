@@ -1,23 +1,30 @@
-<ion-header *ngIf="!isSideMenuVisible">
+<ion-header >  
+  <!-- *ngIf="!isSideMenuVisible" -->
   <ion-toolbar color="primary">
-    <ion-buttons slot="start">
+    <!-- <ion-buttons slot="start">
       <ion-menu-button color="light">
       </ion-menu-button>
-    </ion-buttons>
-    <ion-title class="title" color="light">{{'appName'| translate}}</ion-title>
+    </ion-buttons> -->
+    <ion-title class="title" color="light">{{'appName'| translate}}
+    <!-- <div class="logout-button" (click)="logout()"> -->
+      <ion-icon class="logout-cls" (click)="logout()" src="assets/img/logout.svg"> </ion-icon>
+      <p class="logout-label-cls" (click)="logout()">{{'logout' | translate}}</p>
+    <!-- </div> -->
+  </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <div id="container" class="container" [ngClass]="{'side-menu-visible':!isSideMenuVisible}">
+<ion-content class="main-contain-cls">
+  <div id="container" class="container" >
 
     <div class="case-list">
       <!-- fab placed to the (vertical) center and end -->
-      <ion-fab>
+      <!-- <ion-fab [ngStyle]="{'top.px': resultH}"> -->
+        <!-- <ion-fab >
         <ion-fab-button (click)="setIsDetails(false);" class="fab-add">
           <ion-icon src="assets/img/plus.svg"></ion-icon>
         </ion-fab-button>
-      </ion-fab>
+      </ion-fab> -->
       <div class="search-box-container">
         <!-- checkbox -->
         <div class="checkbox-container">
@@ -27,30 +34,50 @@
 
         <!-- Search Bar -->
         <ion-searchbar class="search-bar" mode="ios" (ionChange)="checkReorder()" name="search" id="search"
-          [(ngModel)]="searchText"></ion-searchbar>
+          [(ngModel)]="searchText" (ionClear)="onClear($event)"></ion-searchbar>
 
         <!-- Delete Icon -->
         <ion-icon class="delete-icon" (click)="deleteAllchecked()" *ngIf="showDelete" src="assets/img/delete.svg">
         </ion-icon>
-        <ion-icon class="switch-icon" (click)="openModal()" *ngIf="!showDelete && cases.length > 1 "
+        <ion-icon class="switch-icon" (click)="openModal(selectedCase.skillLevel)" *ngIf="!showDelete && cases.length > 1 "
           src="assets/img/switch.svg"></ion-icon>
 
+        <ion-icon class="switch-icon" (click)="openForm(isFilterOpen)" src="assets/img/skill_level.svg"></ion-icon>
+        <!-- <button class="open-button" (click)="openForm()">Open Form</button> -->
+        
+        <div class="form-popup" id="myForm">
+          <form action="/action_page.php" class="form-container">
+            <div class="filter-block">     
+              <a class="filter-label-cls" id='Beginner' (click)="applyFilter('Beginner')" for="Beginner">Beginner</a>
+              <a class="filter-label-cls" id='Intermediate' (click)="applyFilter('Intermediate')" for="Intermediate">Intermediate</a>
+              <a class="filter-label-cls" id='Advanced' (click)="applyFilter('Advanced')" for="Advanced">Advanced</a>
+              <a class="filter-label-cls" id='Expert' (click)="applyFilter('Expert')" for="Expert">Expert</a>
+            </div>
+          </form>
+        </div>
+        
+        <!-- *ngIf="!showDelete && cases.length > 1 " -->
       </div>
 
       <!-- Total cases label -->
       <div class="cases-box">
-        <p>{{'cases'| translate}} {{activeCount}}</p>
+        <p style="width: 50%;" *ngIf="!filterActiveCases && filterActiveCases !== 0">{{'cases'| translate}} {{activeCount}}</p>
+        <p style="width: 50%;" *ngIf="filterActiveCases">{{'cases'| translate}} {{ filterActiveCases}}</p>
+        <p style="width: 50%;" *ngIf="filterActiveCases === 0">{{'cases'| translate}} 0 </p>
+
+        <p style="width: 50%; text-align: right; margin-left: 10px;">Level: {{ selectedCase?.skillLevel? selectedCase.skillLevel : skillLevelValue  }}</p>
       </div>
 
       <!-- case list -->
       <div class="cases-container">
-
-        <ion-reorder-group (ionItemReorder)="reorderItems($event)" disabled="false">
+        <ion-reorder-group (ionItemReorder)="reorderItems(skillLevelValue, $event)" disabled="false">
           <!-- Default reorder icon, end aligned items -->
-          <ng-container *ngFor="let item of cases | searchFilter: searchText: currentPage: itemsPerPage ;let i= index;">
+          <ng-container *ngFor="let item of cases | searchFilter: searchText: currentPage: itemsPerPage ;let i= index;">            
             <ion-item class="case" *ngIf="item.show" [attr.data-index]="i"
-              [ngClass]="{'selected':selectedCase?.index -1  == i}" (click)="setSelectedCase(item,i)">
+              [ngClass]="{'selected':selectedCase?.index -1  == i}" (click)="setSelectedCase(item, i)">
               <div class="case-container">
+                <img *ngIf="!item.isPublish" src="../../../assets/img/publish.svg"/>
+                <div class="not-publish-cls" *ngIf="item.isPublish" ></div>
                 <div class="checkbox-container">
                   <ion-checkbox mode="ios" slot="start" (click)="itemCheckBox($event)" (ionChange)="checkifChecked()"
                     [(ngModel)]="item.isChecked" name="termsAndConditions">
@@ -62,20 +89,41 @@
                 </div>
               </div>
               <!-- <ion-reorder class="reorder" mode="ios" slot="end"></ion-reorder> -->
-
               <ion-reorder slot="end">
                 <ion-icon src="assets/img/reorder.svg"></ion-icon>
               </ion-reorder>
             </ion-item>
           </ng-container>
-
-
         </ion-reorder-group>
         <p class="no-data" *ngIf="cases.length == 0 && !loading">{{'noData'| translate}}</p>
+        <ion-row class="pagination-container">
+          <ion-col>
+            <ion-button (click)="prev()">
+              <ion-icon slot="icon-only"
+                [src]="currentPage == 1 ?'assets/img/previous_disable.svg':'assets/img/previous_enable.svg'"></ion-icon>
+            </ion-button>
+            <ion-button (click)="next()">
+              <ion-icon slot="icon-only"
+                [src]="currentPage == totalPage ?'assets/img/next_disable.svg':'assets/img/next_enable.svg'"></ion-icon>
+            </ion-button>
+          </ion-col>
+          <ion-col style="margin-bottom: 15px;">
+            <div>
+              <p> <span>{{currentPage}}</span> of {{totalPage}}</p>
+            </div>
+          </ion-col>
+          <ion-col>
+            <ion-fab >
+              <ion-fab-button (click)="setIsDetails(false);" class="fab-add">
+                <ion-icon src="assets/img/plus.svg"></ion-icon>
+              </ion-fab-button>
+            </ion-fab>
+          </ion-col>
+        </ion-row>
       </div>
-      <div class="pagination-container"
-        *ngIf="(cases.length >0) && (!searchText || searchText && searchText.length ==0)">
-        <div>
+      <!-- <div class="pagination-container"> -->
+        <!-- *ngIf="(cases.length >0) && (!searchText || searchText && searchText.length ==0)" -->
+        <!-- <div>
           <ion-button (click)="prev()">
             <ion-icon slot="icon-only"
               [src]="currentPage == 1 ?'assets/img/previous_disable.svg':'assets/img/previous_enable.svg'"></ion-icon>
@@ -86,18 +134,44 @@
           </ion-button>
         </div>
         <p> <span>{{currentPage}}</span> of {{totalPage}}</p>
-      </div>
+        <div>
+          <ion-fab >
+            <ion-fab-button (click)="setIsDetails(false);" class="fab-add">
+              <ion-icon src="assets/img/plus.svg"></ion-icon>
+            </ion-fab-button>
+          </ion-fab>
+        </div>
+      </div> -->
+
+     
+
+      
+
+
       <!-- <pagination-controls class="my-pagination" id="foo" (pageChange)="pageChanged($event)" (pageBoundsCorrection)="pageChanged($event)"
         maxSize="9" directionLinks="true" autoHide="true" responsive="true" previousLabel="Previous" nextLabel="Next">
       </pagination-controls> -->
     </div>
-    <!-- View Case -->
+    <!------------------------- View Case ------------------------------->
     <!-- case -->
     <div *ngIf="isDetails && !loading && selectedCase" class="case-details">
       <!-- case title -->
       <div class="heading">
         <p class="title">{{'case' | translate}} {{selectedCase?.index}}</p>
       </div>
+
+      <!-- Case Code -->
+      <div class="case-description one-line-desc  dotted-border">
+        <p class="desc-heading one-line-decs-heading">{{'CaseCode' | translate}}</p>
+        <p class="desc-details one-line-decs-details">{{selectedCase?.caseCode}}</p>
+      </div>
+
+      <!-- Skill Level  -->   
+      <div class="case-description one-line-desc dotted-border">
+        <p class="desc-heading one-line-decs-heading">{{'skillLevel' | translate}}</p>
+        <p class="desc-details one-line-decs-details">{{selectedCase?.skillLevel}}</p>
+      </div>
+
       <!-- Case details -->
       <div class="case-description dotted-border">
         <p class="desc-heading">{{'caseDetails' | translate}}</p>
@@ -109,8 +183,10 @@
         <p class="desc-heading">{{'ecgReport' | translate}}</p>
         <!-- Attachment buttons -->
         <div class="btn-container">
-          <!-- <ion-button *ngFor="let item of selectedCase?.attachments" class="attch-btn">{{item}}</ion-button> -->
-          <ion-img *ngIf="selectedCase?.imageUrl" (click)="openViewer(selectedCase)" class="attach-image"
+          <!-- <ion-button *ngIf="filename" (click)="openViewer(selectedCase, 'isAttachment')" class="attch-btn">
+            {{filename? filename : 'Attach ECG Report'}}.{{ext ? ext : ''}}
+          </ion-button> -->
+          <ion-img *ngIf="selectedCase?.imageUrl" (click)="openViewer(selectedCase, 'isAttachment')" class="attach-image"
             [src]="selectedCase?.imageUrl" alt="attachment">
           </ion-img>
         </div>
@@ -131,10 +207,38 @@
         <p class="desc-details">{{selectedCase?.nextStep}}</p>
       </div>
 
+
+      <!-- Answer image -->
+      <div *ngIf="isAnswerImage" class="case-description dotted-border">
+        <p class="desc-heading">{{'answerImage' | translate}}</p>
+        <!-- Attachment buttons -->
+        <div class="btn-container">
+          <ion-button class="attch-btn references-btn" (click)="openViewer(selectedCase, 'isRationaleAttachment')" >
+            <!-- {{rationaleFileName? rationaleFileName : 'Attach ECG Report'}}.{{rationaleExt ? rationaleExt : ''}} -->
+            Click to view
+          </ion-button>
+          <!-- <ion-img *ngIf="selectedCase?.imageUrl" (click)="openViewer(selectedCase)" class="attach-image"
+            [src]="selectedCase?.imageUrl" alt="attachment">
+          </ion-img> -->
+        </div>
+      </div>
+
        <!-- References -->
-       <div class="case-description dotted-border">
+      <div class="case-description dotted-border">
         <p class="desc-heading">{{'references' | translate}}</p>
-        <p class="desc-details" [innerHTML]="selectedCase?.references"></p>
+        <div *ngFor="let referencesLink of referencesLinkUrl">
+          <p class="desc-details link-cls"  (click)="redirectToWeb(referencesLink)"> {{referencesLink}} </p>
+        </div>
+        <!-- <p class="desc-details link-cls" (click)="redirectToWeb(selectedCase?.references)" [innerHTML]="selectedCase?.references"></p> -->
+      </div>
+
+      <!-- Supplement -->
+      <div class="case-description dotted-border">
+        <p class="desc-heading">{{'supplement' | translate}}</p>
+        <div *ngFor="let link of supplimentLinkUrl">
+          <p class="desc-details link-cls"  (click)="redirectToWeb(link)"> {{link}} </p>
+        </div>
+        <!-- <p class="desc-details link-cls" (click)="redirectToWeb(selectedCase?.supplement)" [innerHTML]="selectedCase?.supplement"></p> -->
       </div>
 
       <!-- edit / Delete buttons -->
@@ -174,11 +278,56 @@
           </div>
 
         </div>
+        <!-- Case Code  -->
+        <div class="case-description one-line-cls">
+          <p class="label-text one-line-label-cls">{{'CaseCode' | translate}}</p>
+          <input class="input-cls one-line-input-cls" placeholder="Enter case code" id="caseCode" formControlName="caseCode" name="caseCode" />
+        </div>
+        <!-- <div style="text-align: center !important;" *ngIf="isSubmit && f.caseCode.errors" class="error-block">
+          <small *ngIf=" f.caseCode.errors.required">{{ 'caseDetailsRequired' | translate
+            }}</small>
+        </div> -->
+
+        <!-- Skill Level  -->
+        
+        <div class="case-description one-line-cls">
+          <p class="label-text one-line-label-cls">{{'skillLevel' | translate}}</p>
+
+          <ion-item class="select-item-cls">
+           
+            <!-- <ion-label style="display:none">{{'skillLevel' | translate}}</ion-label> -->
+            <ion-select placeholder="Select One" class="single-select-cls" name="skillLevel" id="skillLevel" formControlName="skillLevel">
+              <ion-select-option *ngFor="let skill of skillLevelOption" value="{{ skill.value }}">{{ skill.name }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+
+          <!-- <select class="single-select-cls one-line-input-cls" name="skillLevel" id="skillLevel" formControlName="skillLevel" required>
+            (change)="changeSkill($event)"
+            <option value="" selected disabled data-isdefault="true">
+              Select
+            </option>
+            <option *ngFor="let skill of skillLevelOption" value="{{ skill.value }}"> {{ skill.name }} </option>
+          </select>           -->
+        </div>
+        <div style="text-align: center !important;" *ngIf="isSubmit && f.skillLevel.errors" class="error-block">
+          <small *ngIf=" f.skillLevel.errors.required">{{ 'caseDetailsRequired' | translate
+            }}</small>
+        </div>
+
         <!-- Case details -->
         <div class="case-description">
           <p class="label-text">{{'caseDetails2' | translate}}</p>
-          <ion-textarea style="height: 100px;" rows="5" id="details" formControlName="details" name="details"
-            class="textarea" autoGrow="true" placeholder="{{'enter'|translate}}"></ion-textarea>
+          <ion-textarea 
+          style="height: 110px;" 
+          rows="3" 
+          id="details" 
+          formControlName="details" 
+          name="details"
+          class="textarea" 
+          autoGrow="true" 
+          placeholder="{{'enter'|translate}}">
+        </ion-textarea>
 
 
           <div *ngIf="isSubmit && f.details.errors" class="error-block">
@@ -195,12 +344,12 @@
           <p class="desc-heading">{{'ecgReport' | translate}}</p>
           <!-- Attachment buttons -->
           <div class="btn-container" [ngClass]="{'align-right':attachment}">
-            <ion-img *ngIf="attachment" class="attach-image" (click)="openViewer(attachment)"
+            <ion-img *ngIf="attachment" class="attach-image" (click)="openViewer(attachment, 'isAttachment')"
               [src]="attachment?.imagePreviewUrl" alt="attachment">
             </ion-img>
-
-            <!-- <ion-button *ngIf="attachment" class="attch-btn">{{attachment?.file?.imagePreviewUrl || attachment?.file}}</ion-button> -->
-            <ion-button id="attachEcgReport" (click)="attachImage()" class="attch-btn">{{'attachEcgReport' | translate}}
+            <ion-button *ngIf="!attachment" id="attachEcgReport" (click)="attachImage()" class="attch-btn">{{'attachEcgReport' | translate}}
+            </ion-button>
+            <ion-button *ngIf="attachment" id="attachEcgReport" (click)="attachImage()" class="attch-btn"> Remove ECG File
             </ion-button>
 
           </div>
@@ -216,7 +365,7 @@
         </div>
         <div class="case-description">
           <p class="label-text">{{'result2' | translate}}</p>
-          <ion-textarea id="result" rows="5" formControlName="result" name="result" class="textarea" autoGrow="true"
+          <ion-textarea style="height: 45px !important;" id="result" rows="1" formControlName="result" name="result" class="textarea" autoGrow="true"
             placeholder="{{'enter'|translate}}"></ion-textarea>
 
           <div *ngIf="isSubmit && f.result.errors" class="error-block">
@@ -228,18 +377,50 @@
         <!-- Next Step -->
         <div class="case-description">
           <p class="label-text">{{'nextStep2' | translate}}</p>
-          <ion-textarea id="nextStep" rows="5" formControlName="nextStep" name="nextStep" class="textarea"
-            autoGrow="true" placeholder="{{'enter'|translate}}"></ion-textarea>
+          <ion-textarea 
+            style="height: 130px !important;" 
+            id="nextStep" 
+            rows="3" 
+            formControlName="nextStep" 
+            name="nextStep" 
+            class="textarea"
+            autoGrow="true" 
+            placeholder="{{'enter'|translate}}">
+          </ion-textarea>
 
           <div *ngIf="isSubmit && f.nextStep.errors " class="error-block">
             <small *ngIf="f.nextStep.errors.required">{{ 'caseNextRequired' | translate
               }}</small>
           </div>
         </div>
+        <div class="attachment">
+          <input id="selectRefrenceFile" #selectRefrenceFile style=" display: 'none' " type="file" (change)="handleSelectRefrenceFile($event)"
+            accept="image/*" />
+            
+            <p class="desc-heading">{{'answerImage' | translate}}</p>
+          <!-- Attachment buttons -->
+          <div class="btn-container" [ngClass]="{'align-right':rationaleAttachment}">
+            <ion-img *ngIf="rationaleAttachment?.imagePreviewUrl && isAnswerImage" class="attach-image" (click)="openViewer(rationaleAttachment, 'isRationaleAttachment')"
+              [src]="rationaleAttachment ? rationaleAttachment.imagePreviewUrl : selectedCase.rationaleImageUrl" alt="rationaleAttachment">
+            </ion-img>
+           
+            <div>
+              <ion-button *ngIf="rationaleAttachment?.imagePreviewUrl" id="attachRefrenceReport" (click)="removeReferencesImage()" class="attch-btn custom-width">{{'removeImage' | translate}}
+              </ion-button>
+           
+            <ion-button  id="attachRefrenceReport" (click)="attachReferencesImage(rationaleAttachment?.imagePreviewUrl)" class="attch-btn custom-width">{{rationaleAttachment?.imagePreviewUrl != null ? 'Replace Image' : 'Attach Image'}}
+            </ion-button>
+
+            
+          </div>
+          </div>
+        </div>
+
         <!-- References -->
         <div class="case-description">
-          <p class="label-text">{{'references2' | translate}}</p>
+          <p class="label-text">{{'referencesLink' | translate}}</p>
 
+          <!-- <input formControlName="references" name="references" id="references" class="input-cls"/> -->
           <editor formControlName="references" name="references" id="references" class="textarea no-border"
             apiKey="sq6kvq4itc0hhndlq9a9a6y974zcdjxe51lhd7mpr2si72th"
             [init]="{
@@ -247,18 +428,48 @@
               toolbar:'', height : '100%',
               link_default_protocol: 'https',
               default_link_target: '_blank',
+              convert_urls: false,
               menubar:false,
               statusbar: false,
               base_url: '/tinymce',
               suffix: '.min' }">
           </editor>
+
           <div *ngIf="isSubmit && f.references.errors " class="error-block">
             <small *ngIf="f.references.errors.required">{{ 'referencesRequired' | translate
               }}</small>
           </div>
         </div>
 
+        <!-- Supplement -->
+        <div class="case-description">
+          <p class="label-text">{{'supplement' | translate}}</p>
+          <!-- <input formControlName="supplement" name="supplement" id="supplement" class="input-cls"/> -->
 
+          <editor formControlName="supplement" name="supplement" id="supplement" class="textarea no-border"
+            apiKey="sq6kvq4itc0hhndlq9a9a6y974zcdjxe51lhd7mpr2si72th"
+            [init]="{
+              plugins: 'link autolink',
+              toolbar:'', height : '100%',
+              link_default_protocol: 'https',
+              default_link_target: '_blank',
+              convert_urls: false,
+              menubar:false,
+              statusbar: false,
+              base_url: '/tinymce',
+              suffix: '.min' }">
+          </editor>
+          <div *ngIf="isSubmit && f.supplement.errors " class="error-block">
+            <small *ngIf="f.supplement.errors.required">{{ 'supplementRequired' | translate }}</small>
+          </div>
+        </div>
+
+         <!-------------- Keep me signed in --------------->
+        <div class="checkbox-container">
+          <input type="checkbox" formControlName="isPublish" class="checkbox-cls" mode="ios" slot="start" (click)="publishClick()" name="isPublish"
+          checked="{{isPublish}}">
+          <ion-label class="checkbox-label">{{ 'publishInTheApp' | translate }}</ion-label>
+        </div>
 
         <!-- edit / Delete buttons -->
         <div class="bottom-container">

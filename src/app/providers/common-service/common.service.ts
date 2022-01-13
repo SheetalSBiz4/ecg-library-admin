@@ -77,8 +77,9 @@ export class CommonService {
   async showLoading(message?: string) {
     this.isLoading = true;
     this.loadingCtrl.create({
-      message: `<ion-img src='/assets/img/loader.gif' class="app-loader-icon"></ion-img>`,
-      duration: 30000,
+      message: `<ion-spinner name="crescent" color="tertiary" class="app-loader-icon"></ion-spinner>`,
+      // duration: 30000,
+      duration: 1500,
       translucent: true,
       cssClass: 'custom-loading',
       spinner: null
@@ -206,5 +207,35 @@ export class CommonService {
     await alert.present();
   }
 
-
+  /**
+   * Function to show a default alert with custom message
+   * @param message
+   */
+   public async showConfirmationWithButton(title, message, confirmCallback, cancelCallBack, yesBtnText?: any, noBtnText?: any) {
+    let existingALert = await this.checkIfAlertExist();
+    if (existingALert) {
+      existingALert.dismiss();
+    }
+    const alert = await this.alertController.create({
+      cssClass: 'ecg-logout-alert',
+      header: '',
+      message: message,
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel',
+          handler: () => {
+            cancelCallBack && cancelCallBack();
+          }
+        },
+        {
+          text: 'Yes',
+          handler: () => {
+            confirmCallback && confirmCallback();
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
 }

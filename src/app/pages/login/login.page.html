@@ -3,8 +3,8 @@
   <div class="page-container">
     <!-- Logo -->
     <p class="logo">{{'appName' | translate}}</p>
-    <p class="greeting">{{'greeting' | translate}}</p>
-    <p class="message">{{'message' | translate}}</p>
+    <p class="welcome-greeting">{{'greeting' | translate}}</p>
+    <!-- <p class="message">{{'message' | translate}}</p> -->
 
     <form [formGroup]="loginForm" (keyup.enter)="login()" class="form">
 
@@ -45,8 +45,8 @@
 
       <!-------------- Keep me signed in --------------->
       <div class="checkbox-container">
-        <ion-checkbox mode="ios" slot="start" (click)="checkBox()" name="termsAndConditions"
-          formControllName="termsAndConditions"></ion-checkbox>
+        <ion-checkbox mode="ios" slot="start" (click)="checkBox($event)" name="termsAndConditions"
+        checked="{{f.termsAndConditions.value}}" formControllName="termsAndConditions"></ion-checkbox>
         <ion-label class="checkbox-label">{{ 'rememberMe' | translate }}</ion-label>
       </div>
 

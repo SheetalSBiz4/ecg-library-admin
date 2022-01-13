@@ -10,6 +10,7 @@ import { CommonService, FirebaseService, ValidatorService } from 'src/app/provid
 })
 export class SwitchCasePage implements OnInit {
   @Input() maxValue: number;
+  @Input() skillLevel: "";
   public switchForm: FormGroup;
   public isSubmit = false;
   public submitBtnDisabled = false;
@@ -64,8 +65,9 @@ export class SwitchCasePage implements OnInit {
 
     if (this.switchForm.valid) {
       this.commonService.showLoading();
-      const payload = this.switchForm.value;
-      this.firebaseService.switchCase(payload.to - 1, payload.from - 1)
+      var payload = this.switchForm.value;
+
+      this.firebaseService.switchCase(this.skillLevel, payload.to - 1, payload.from - 1)
       .then(()=>{
         this.commonService.translateText('caseSwitched').subscribe((msg) => {
           this.commonService.showAlert('Success', msg);

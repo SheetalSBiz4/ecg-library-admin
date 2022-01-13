@@ -210,6 +210,10 @@ export class FirebaseService {
   public createCase(data) {
     return new Promise((resolve, reject) => {
       let message = {
+        caseCode: data.caseCode,
+        skillLevel: data.skillLevel,
+        supplement: data.supplement,
+        isPublish: data.isPublish,
         details: data.details,
         result: data.result,
         nextStep: data.nextStep,
@@ -218,13 +222,15 @@ export class FirebaseService {
         updated_time: firebase.firestore.FieldValue.serverTimestamp(),
         attachments: [data.uploadUrl],
         dimensions: data.dimensions,
+        rationaleAttachments: [data.uploadRationaleUrl],
+        dimensionsRationale: data.dimensionsRationale
       };
       firestore
-        .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Cases`)
+        .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${message.skillLevel}/Cases`)
         .add(message)
         .then((res) => {
           // console.log("res", res);
-          this.updateCount(1, 'add', res.id, data.caseNumber - 1).then(() => {
+          this.updateCount(message.skillLevel, 1, 'add', res.id, data.caseNumber - 1).then(() => {
             resolve(res.id);
           }).catch((err) => {
             reject(err);
@@ -233,7 +239,6 @@ export class FirebaseService {
         .catch((error) => {
           reject(error);
         });
-
     });
 
   }
@@ -242,27 +247,44 @@ export class FirebaseService {
    * editCase - function to edit a new case in firebase
    */
   public editCase(data) {
-    // console.log('edit', data);
+  console.log('edit', data);
     return new Promise((resolve, reject) => {
       let Case = {
+        caseCode: data.caseCode,
+        skillLevel: data.skillLevel,
+        supplement: data.supplement,
+        isPublish: data.isPublish,
         details: data.details,
         result: data.result,
         nextStep: data.nextStep,
         references:data.references,
         updated_time: firebase.firestore.FieldValue.serverTimestamp(),
         attachments: [data.uploadUrl],
+        rationaleAttachments: [data.rationaleUploadUrl],
         dimensions: data.dimensions,
       };
+      // if(data.isPublish != data.previousPublishFlag){
+      //   data.caseNumber = this.sequence.length;
+      // }
       firestore
-        .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Cases`)
+        .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${Case.skillLevel}/Cases`)
         .doc(data.firebaseId)
         .set(Case, { merge: true })
         .then((res) => {
-          // no need to update the sequence
-          if (data.caseNumber == data.oldCaseNumber) {
+          // no need to update the sequence && (data.isPublish == data.previousPublishFlag)
+          if (data.caseNumber == data.oldCaseNumber && (data.isPublish == data.previousPublishFlag)) {
             resolve(false);
+          }
+          else if(data.isPublish != data.previousPublishFlag){
+           
+            var curIndex = this.sequence.indexOf(data.firebaseId)
+            this.reorderAfterPublishFlagChange(Case.skillLevel, data.caseNumber - 1, curIndex).then(() => {
+              resolve(true);
+            }).catch((err) => {
+              reject(err);
+            })
           } else {
-            this.reorderCase(data.caseNumber - 1, data.oldCaseNumber - 1).then(() => {
+            this.reorderCase(Case.skillLevel, data.caseNumber - 1, data.oldCaseNumber - 1).then(() => {
               resolve(true);
             }).catch((err) => {
               reject(err);
@@ -277,10 +299,12 @@ export class FirebaseService {
 
   }
 
+ 
+
   /**
    * reorderCase - function to reorder the case in firebase
    */
-  public reorderCase(to, from) {
+  public reorderCase(skillLevel, to, from) {
     return new Promise((resolve, reject) => {
       this.sequence.splice(to, 0, ...this.sequence.splice(from, 1))
 
@@ -289,7 +313,7 @@ export class FirebaseService {
         updated_time: firebase.firestore.FieldValue.serverTimestamp(),
       };
       firestore
-        .doc(`env/${AppSetting.ENVIRONMENT_NAME}/Stats/totalStats`)
+        .doc(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${skillLevel}/Stats/totalStats`)
         .set(updateDoc, { merge: true })
         .then((res) => {
           resolve('Success');
@@ -304,7 +328,11 @@ export class FirebaseService {
   /**
    * reorderCase - function to reorder the case in firebase
    */
-  public switchCase(to, from) {
+  public switchCase(skillLevel, to, from) {
+    console.log("skillLevel....", skillLevel);
+    console.log("to....", to);
+    console.log("from....", from);
+
     return new Promise((resolve, reject) => {
       [this.sequence[to], this.sequence[from]] = [this.sequence[from], this.sequence[to]];
 
@@ -313,7 +341,7 @@ export class FirebaseService {
         updated_time: firebase.firestore.FieldValue.serverTimestamp(),
       };
       firestore
-        .doc(`env/${AppSetting.ENVIRONMENT_NAME}/Stats/totalStats`)
+        .doc(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${skillLevel}/Stats/totalStats`)
         .set(updateDoc, { merge: true })
         .then((res) => {
           resolve('Success');
@@ -328,7 +356,7 @@ export class FirebaseService {
   public deletCase(data) {
     return new Promise((resolve, reject) => {
       firestore
-        .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Cases`)
+        .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${data.skillLevel}/Cases`)
         .doc(`${data.firebaseId}`)
         .delete()
         .then((res) => {
@@ -337,7 +365,7 @@ export class FirebaseService {
           });
           // to reduce the loaded count in case of delete
           this.loadedTill--;
-          this.updateCount(-1, 'delete', data.firebaseId, data.index - 1).then(() => {
+          this.updateCount(data.skillLevel, -1, 'delete', data.firebaseId, data.index - 1).then(() => {
             resolve('Success');
           }).catch((err) => {
             reject(err);
@@ -352,55 +380,12 @@ export class FirebaseService {
   }
 
   /**
-    * getRecentMessages -Function to get the list of friends the user is chating with
-    */
-  public getCases2(limit, isLoadPrevious) {
-    return new Promise((resolve, reject) => {
-      let quary = firestore
-        .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Cases`)
-        .orderBy("created_time");
-      if (isLoadPrevious && myRecentlastVisible) {
-        quary = quary.startAfter(myRecentlastVisible).limit(limit);
-      } else {
-        myRecentlastVisible = "";
-        quary = quary.limit(limit);
-      }
-      quary
-        .get()
-        .then((querySnapshot) => {
-          if (querySnapshot) {
-            myRecentlastVisible =
-              querySnapshot.docs[querySnapshot.docs.length - 1];
-            let dataMsgs = [];
-            querySnapshot?.forEach((doc) => {
-              if (doc?.data()) {
-                const tempDoc = doc.data({ serverTimestamps: "estimate" });
-                tempDoc.created_time = this.toDate(tempDoc.created_time);
-                tempDoc.updated_time = this.toDate(tempDoc.updated_time);
-                tempDoc.firebaseId = doc.id;
-
-                dataMsgs.push(tempDoc);
-              }
-            });
-            resolve(dataMsgs);
-          } else {
-            resolve([]);
-          }
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    });
-  }
-
-
-  /**
    * getCase2 - function to get the ordered list of data based on sequence from array
    */
-  public async getCases(isPagination, limit, isLoadPrevious) {
+  public async getCases(skillLevel, isPagination, limit, isLoadPrevious) {
     return new Promise((resolve, reject) => {
       firestore
-        .doc(`env/${AppSetting.ENVIRONMENT_NAME}/Stats/totalStats`)
+        .doc(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${skillLevel}/Stats/totalStats`)
         .get()
         .then((querySnapshot) => {
           if (querySnapshot) {
@@ -425,7 +410,7 @@ export class FirebaseService {
 
               let itemRefs = sequenceToGetData.map(caseId => {
                 return firestore
-                  .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Cases`)
+                  .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${skillLevel}/Cases`)
                   .doc(caseId)
                   .get();
               });
@@ -461,7 +446,7 @@ export class FirebaseService {
   /**
    * name
    */
-  public updateCount(count, action, id: any, caseNumber) {
+  public updateCount(skillLevel, count, action, id: any, caseNumber) {
     let updateDoc;
     if (action == 'delete') {
       return new Promise((resolve, reject) => {
@@ -471,7 +456,7 @@ export class FirebaseService {
           sequence: firebase.firestore.FieldValue.arrayRemove(id),
         }
         let query;
-        query = firestore.doc(`env/${AppSetting.ENVIRONMENT_NAME}/Stats/totalStats`)
+        query = firestore.doc(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${skillLevel}/Stats/totalStats`)
         query.set(updateDoc, { merge: true })
           .then((res) => {
             resolve(res);
@@ -481,13 +466,13 @@ export class FirebaseService {
       });
     } else if (action == 'add') {
       let query;
-      query = firestore.doc(`env/${AppSetting.ENVIRONMENT_NAME}/Stats/totalStats`);
+      query = firestore.doc(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${skillLevel}/Stats/totalStats`);
       return firestore.runTransaction((transaction) => {
         // This code may get re-run multiple times if there are conflicts.
         return transaction.get(query).then((tempDoc) => {
           let sequence = tempDoc?.data()?.sequence;
-          if(!sequence){
-            sequence =[];
+          if (!sequence) {
+            sequence = [];
           }
           // console.log('sequence', sequence.length);
           // console.log('casenumber', caseNumber);
@@ -515,10 +500,10 @@ export class FirebaseService {
    * setRecentMessageSnapshot - function to set the snapshot for recent messsage
    * so to get updates for any new recent messages
    */
-  public setTotalSnapshot(callback) {
+  public setTotalSnapshot(filterValue, callback) {
     this.removeTotalSnapshot();
     mySnapshot = firestore
-      .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Stats`)
+      .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${filterValue}/Stats`)
       .orderBy("updated_time", "desc")
       .limit(1)
       .onSnapshot(
@@ -546,10 +531,10 @@ export class FirebaseService {
       );
   }
 
-  public setNewSnapshot(callback) {
+  public setNewSnapshot(filterValue, callback) {
     this.removeNewSnapshot();
     newSnapShot = firestore
-      .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Cases`)
+      .collection(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${filterValue}/Cases`)
       .orderBy("updated_time", "desc")
       .limit(1)
       .onSnapshot(
@@ -603,14 +588,31 @@ export class FirebaseService {
   }
 
   /**
-   * uploadImage
+   * getRationaleMediaUrl
    */
-  public uploadImage(file, oldImg) {
-    // console.log('prrr')
+  public getRationaleMediaUrl(path) {
+    return new Promise((resolve, reject) => {
+      storage.ref(`env/${AppSetting.ENVIRONMENT_NAME}/rationaleAttachment/${path}`).getDownloadURL()
+        .then(url => {
+          resolve(url);
+        })
+        .catch(error => {
+          // console.log("getDownloadURL ==>", error);
+          reject(error);
+        });
+    });
+  }
+
+  /**
+   * uploadRationaleImage
+   */
+  public uploadRationaleImage(file, oldImg) {
+    console.log('uploadRationaleImage..file..', file, "oldImg...", oldImg);
+
     const tmpFileName = new Date().getTime();
     const ext = file.name.split('.').pop();
     const filename = `${file.name ? file.name.split('.')[0] + '_' + tmpFileName : tmpFileName}.${ext}`;
-    var uploadString = `env/${AppSetting.ENVIRONMENT_NAME}/attachment/${filename}`;
+    var uploadString = `env/${AppSetting.ENVIRONMENT_NAME}/rationaleAttachment/${filename}`;
     var response = { state: '', data: '' }
     return new Promise((resolve, reject) => {
       storage
@@ -618,7 +620,7 @@ export class FirebaseService {
         .put(file)
         .then(result => {
           if (oldImg) {
-            this.deleteImage(oldImg)
+            this.deleterationaleImage(oldImg)
           }
           resolve(filename);
         }).catch(error => {
@@ -627,8 +629,71 @@ export class FirebaseService {
     })
   }
 
+  public deleterationaleImage(path) {
+    console.log("deleterationaleImage....path-----------------", path);
+    return new Promise((resolve, reject) => {
+      storage.ref(`env/${AppSetting.ENVIRONMENT_NAME}/rationaleAttachment/${path}`).delete()
+        .then(url => {
+          resolve('success')
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
+
+  /**
+   * uploadImage
+   */
+  public uploadImage(file, rationaleFile, oldImg) {
+    console.log('uploadImage..file..', file, "rationaleFile..", rationaleFile, "oldImg...", oldImg);
+
+    var response = { filename: '', rationaleFileName: '' }
+    const tmpFileName = new Date().getTime();
+    const ext = file.name.split('.').pop();
+    var filename = `${file.name ? file.name.split('.')[0] + '_' + tmpFileName : tmpFileName}.${ext}`;
+    var uploadString = `env/${AppSetting.ENVIRONMENT_NAME}/attachment/${filename}`;
+    response.filename = filename;
+    return new Promise((resolve, reject) => {
+      storage
+        .ref(uploadString)
+        .put(file)
+        .then(result => {
+          result.uploadAttachment = result;
+          if (oldImg) {
+            this.deleteImage(oldImg)
+          }
+          const tmpRationaleFileName = new Date().getTime();
+          if (rationaleFile != "") {
+            const ext = rationaleFile.name.split('.').pop();
+            var rationaleFileName = `${rationaleFile.name ? rationaleFile.name.split('.')[0] + '_' + tmpRationaleFileName : tmpRationaleFileName}.${ext}`;
+            var uploadRationaleString = `env/${AppSetting.ENVIRONMENT_NAME}/rationaleAttachment/${rationaleFileName}`;
+            response.rationaleFileName = rationaleFileName;
+            storage
+              .ref(uploadRationaleString)
+              .put(rationaleFile)
+              .then(result => {
+                if (oldImg) {
+                  this.deleterationaleImage(oldImg)
+                }
+
+                resolve(response);
+              }).catch(error => {
+                reject(error);
+              })
+          } else {
+            response.rationaleFileName = "";
+            resolve(response);
+          }
+
+        }).catch(error => {
+          reject(error);
+        })
+    })
+  }
+
   public deleteImage(path) {
-    // console.log("path-----------------", path);
+    console.log("deleteImage....path-----------------", path);
     return new Promise((resolve, reject) => {
       storage.ref(`env/${AppSetting.ENVIRONMENT_NAME}/attachment/${path}`).delete()
         .then(url => {
@@ -640,7 +705,30 @@ export class FirebaseService {
     });
   }
 
+  public reorderAfterPublishFlagChange(skillLevel, to, from) {
+    return new Promise((resolve, reject) => {
+      this.sequence.splice(this.sequence.length - 1, 0, ...this.sequence.splice(from, 1))
+      console.log("this.sequence.length =>", this.sequence.length);
+      console.log("this.sequence =>", this.sequence);
+      
+      let updateDoc = {
+        sequence: this.sequence,
+        updated_time: firebase.firestore.FieldValue.serverTimestamp(),
+      };
+      firestore
+        .doc(`env/${AppSetting.ENVIRONMENT_NAME}/Level/${skillLevel}/Stats/totalStats`)
+        .set(updateDoc, { merge: true })
+        .then((res) => {
+          resolve('Success');
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
 
+  }
+
+  
 }
 
 
