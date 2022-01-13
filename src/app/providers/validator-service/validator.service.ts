@@ -140,11 +140,24 @@ export class ValidatorService {
     */
    public createCaseFormValidator = () => {
     return this.formBuilder.group({
+      caseCode: [
+        '',
+        Validators.compose([
+          // Validators.required,
+          // Validators.maxLength(250)
+        ]),
+      ],
       caseNumber: [
         '',
         Validators.compose([
           Validators.required,
           // Validators.maxLength(250)
+        ]),
+      ],
+      skillLevel: [
+        'select',
+        Validators.compose([
+          Validators.required
         ]),
       ],
       details: [
@@ -175,7 +188,20 @@ export class ValidatorService {
           // Validators.maxLength(250)
         ]),
       ],
-
+      supplement: [
+        '',
+        Validators.compose([
+          // Validators.required,
+          // Validators.maxLength(250)
+        ]),
+      ],
+      isPublish:[
+        '',
+        Validators.compose([
+          // Validators.required,
+          // Validators.maxLength(250)
+        ]),
+      ]
 
     });
   }

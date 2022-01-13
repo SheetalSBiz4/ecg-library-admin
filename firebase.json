@@ -1,6 +1,37 @@
 {
-  "hosting": {
+  "hosting": [{
     "public": "www",
+    "site": "ecg-library",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  {
+    "public": "www",
+    "site": "ecg-uat-library",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  {
+    "public": "www",
+    "site": "ecg-dev-library",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -13,4 +44,5 @@
       }
     ]
   }
+]
 }
